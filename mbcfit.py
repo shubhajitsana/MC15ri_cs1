@@ -9,7 +9,7 @@ mbc = ROOT.RooRealVar("mbc","M_{bc} (GeV)",5.23,5.29)
 data = ROOT.RooDataSet("data", "data", ROOT.RooArgSet(mbc))
 
 # Loading input root file and creating new root file
-inFile = ROOT.TFile.Open("/home/sana/ssana/MC15ri/data/charged/mdst_000001_prod00024816_task10020000001.root")
+inFile = ROOT.TFile.Open("/home/sana/ssana/15_data/combined/charged.root")
 inTree = inFile.Get('tree')
 NEvent = inTree.GetEntries()
 
@@ -30,12 +30,12 @@ for iEvent in range(inTree.GetEntries()):
 
 
 # //Drawing casual Histogram(BINNED) before fitting
-# binDataSet = ROOT.RooDataHist("binDataSet", "binDataSet", mbc, data)
-# c1 = ROOT.TCanvas("c1", "", 1500, 1500)  
-# xframe1 = mbc.frame(ROOT.RooFit.Title(""), ROOT.RooFit.Bins(200))
-# binDataSet.plotOn(xframe1, ROOT.Binning(200), ROOT.DataError(ROOT.RooAbsData.SumW2()))
-# xframe1.Draw()
-# c1.SaveAs("py_prefit_histo.png")
+binDataSet = ROOT.RooDataHist("binDataSet", "binDataSet", mbc, data)
+c1 = ROOT.TCanvas("c1", "", 1500, 1500)  
+xframe1 = mbc.frame(Title="prefit histooo", Bins=200)
+binDataSet.plotOn(xframe1, Binning=200, DataError="SumW2")
+xframe1.Draw()
+c1.SaveAs("py_prefit_histo.png")
 
 
 #***********************************Mbc fit****************************
@@ -46,7 +46,7 @@ gauss1 = ROOT.RooGaussian("gauss1","gaussian PDF",mbc,sigmean,sigwidth) #Gauss1 
 
 # // --- Build Argus background PDF ---
 argpar = ROOT.RooRealVar("argpar","argus shape parameter",-34.70)#,-100.,-1.)
-argus = ROOT.RooArgusBG("argus","Argus PDF",mbc,ROOT.RooFit.RooConst(5.29),argpar) #mbc background		 
+argus = ROOT.RooArgusBG("argus","Argus PDF",mbc, RooConst=5.29, argpar) #mbc background		 
     
 # //Initialization of parameter before adding two pdf
 event_count = counter 
@@ -54,7 +54,7 @@ signal_count = counter*0.4
 back_count = counter*0.6
 n_sig = ROOT.RooRealVar("n_sig", "n_sig", signal_count, 0., event_count)#52000
 n_bkg = ROOT.RooRealVar("n_bkg", "n_bkg", back_count, 0., event_count)#95000
-sum = ROOT.RooAddPdf("sum","sum",ROOT.RooArgList(gauss1,argus),ROOT.RooArgList(n_sig, n_bkg))#adding two pdf
+sum = ROOT.RooAddPdf("sum","sum", [gauss1,argus], [n_sig, n_bkg])#adding two pdf
 
 sum.fitTo(data)#fitting
 
@@ -64,16 +64,10 @@ frame = mbc.frame()#20)
 data.plotOn(frame)
 sum.plotOn(frame)
 sum.plotOn(frame) 
-sum.paramOn(frame,      #Prints the fitted parameter on the canvas
-            ROOT.RooFit.FillColor(ROOT.kRed),
-            ROOT.RooFit.Label("Fit parameters"),
-            ROOT.RooFit.Layout(0.1, 0.35, 0.9),
-            ROOT.RooFit.Format("NELU", ROOT.RooFit.AutoPrecision(1)),
-            ROOT.RooFit.ShowConstants())
-sum.plotOn(frame,ROOT.RooFit.Components(gauss1),ROOT.RooFit.LineColor(ROOT.kRed),
-            ROOT.RooFit.LineStyle(ROOT.kDashed))
-sum.plotOn(frame,ROOT.RooFit.Components(argus),ROOT.RooFit.LineColor(ROOT.kMagenta),
-            ROOT.RooFit.LineStyle(ROOT.kDashed))
+#Prints the fitted parameter on the canvas
+sum.paramOn(frame, FillColor="kRed", Label="Fit parameters", Layout=(0.1, 0.35, 0.9),Format=("NELU", AutoPrecision=1), ShowConstants=True)
+sum.plotOn(frame, Components="gauss1",LineColor="kRed", LineStyle="--")
+sum.plotOn(frame, Components="argus",LineColor="kMagenta", LineStyle="--")
 
 # //Extract info. from fitting frame and showing
 chisq = frame.chiSquare()#extract chi2 value

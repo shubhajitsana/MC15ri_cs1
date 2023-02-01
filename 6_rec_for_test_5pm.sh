@@ -20,10 +20,11 @@ let rec_start_uubar=${2:-801}-1
 let rec_start_ddbar=${3:-256}-1
 let rec_start_ssbar=${4:-244}-1
 let rec_start_ccbar=${5:-801}-1
+let rec_start_signal=${6:-6}-1
 let rec_start=0
 
 # Strating reconstruction
-declare -a options=("charged" "uubar" "ddbar" "ssbar" "ccbar") #"mixed" 
+declare -a options=("charged" "uubar" "ddbar" "ssbar" "ccbar" "signal") #"mixed" 
 
 for opt in "${options[@]}"
 do
@@ -39,9 +40,16 @@ do
     echo "Name of the folder of output file is $output_folder_name"
 
     # path of input files
-    input_datapath='/group/belle2/dataprod/MC/MC15ri'
-    input_folder_name="$input_datapath/$opt/sub00"    
+    if [[ $opt == "signal" ]]
+    then
+        input_datapath='/home/belle2/ssana/Official_signalMC'
+        input_folder_name="$input_datapath/sub00"
+    else
+        input_datapath='/group/belle2/dataprod/MC/MC15ri'
+        input_folder_name="$input_datapath/$opt/sub00"
+    fi
     echo "Name of the folder of Input file is $input_folder_name"
+    
 
     ###########################################################
     # Reading file name in given folder
@@ -88,6 +96,9 @@ do
     elif [[ $opt == "ccbar" ]]
     then
         rec_start=$rec_start_ccbar
+    elif [[ $opt == "signal" ]]
+    then
+        rec_start=$rec_start_signal
     fi
 
     # Submiting Jobs

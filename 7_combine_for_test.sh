@@ -15,23 +15,31 @@ else
 fi
 
 #combining for different folder
-declare -a options=("charged" "uubar" "ddbar" "ssbar" "ccbar") #"mixed" 
+declare -a options=("charged" "uubar" "ddbar" "ssbar" "ccbar" "signal") #"mixed" 
 
 for opt in "${options[@]}"
 do
+    # Ouput file name
+    output_file="$output_path/test_$opt.root"
+    if [ -f "$output_file" ]
+    then
+        echo "$output_file already exists."
+        $(rm -f ${output_file})
+        echo "So $output_file has been deleted."
+    fi
+
+    # Input Directory
     input_path="$path/cs/test/$opt"
     input_files=$(ls ${input_path}/*.root)
     input_file_count=$(ls ${input_path}/*.root | wc -l)
     echo "Number of input files in $input_path is $input_file_count"
 
     # Combining files
-    output_file="$output_path/test_$opt.root"
-    if [ -f "$output_file" ]
+    if [[ $opt == "signal" ]]
     then
-        echo "$output_file already exists."
-        $(rm -f ${output_file})
-        echo "So $output_file has been deleted. Plese run this bash file again."
-    else 
+        echo "$(cp $input_files $output_file)" 
+                #it's just copying a file from one folder to another folder with different name
+    else
         echo "Please wait for Combinded output file from $input_path folder....."
         # echo "$(hadd ${output_path}/train_$opt.root ${path_in_string})" 
         # WHEN WE PUT "*" IN "ls" COMMAND, IT RETURNS FULL PATHNAME ALSO.

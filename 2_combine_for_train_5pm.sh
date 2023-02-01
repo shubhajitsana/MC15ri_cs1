@@ -1,5 +1,5 @@
 #!/bin/bash
-# takes command as: ./2_combine_for_train.sh 480 800 255 243 800
+# takes command as: ./2_combine_for_train.sh 480 800 255 243 800 5
 # This file combines files for training(mailny used for scaling)
 # WHEN WE PUT "*" IN "ls" COMMAND, IT RETURNS FULL PATHNAME ALSO.
 # SO WE DON'T NEED TO RUN "FOR" LOOP TO ADD PATH NAME
@@ -21,6 +21,7 @@ let store_upto_uubar=${2:-800}
 let store_upto_ddbar=${3:-255}
 let store_upto_ssbar=${4:-243}
 let store_upto_ccbar=${5:-800}
+let store_upto_signal=${6:-5}
 let store_upto=0
 
 
@@ -28,7 +29,7 @@ let store_upto=0
 let nRootFile=300
 
 #combining for different folder
-declare -a options=("charged" "uubar" "ddbar" "ssbar" "ccbar") #"mixed" 
+declare -a options=("charged" "uubar" "ddbar" "ssbar" "ccbar" "signal") #"mixed" 
 
 for opt in "${options[@]}"
 do
@@ -75,6 +76,9 @@ do
     elif [[ $opt == "ccbar" ]]
     then
         store_upto=$store_upto_ccbar
+    elif [[ $opt == "signal" ]]
+    then
+        store_upto=$store_upto_signal
     fi
 
     # Storing file Upto given number
@@ -94,56 +98,55 @@ do
         echo "$output_file already exists."
         $(rm -f ${output_file})
         echo "So $output_file has been deleted. Plese run this bash file again."
-    else 
-        echo "Please wait for combination of $nRootFile input file from $input_path folder....."
+    fi
 
-        ###########################start combining##################
+    ###########################start combining##################
+    echo "Please wait for combination of $nRootFile input file from $input_path folder....."
 
-        if [ $store_upto -lt $nRootFile ]
-        then
-            echo "In $input_path folder the given number($store_upto) of file to combine is less than $nRootFile."
-            echo "So hadd is being applying just once."
-            echo "$(hadd ${output_file} ${path_in_string})"
-        else
-            combine=""	##Empty array to store files
-            intermediate_files=""   # To store the name of intermediate combinded files
-            let nRootFilesFlag=0    # To take counts and combine when it takes value n*$nRootFile
-            let newFileNo=0;
-            #moving 1-300 file and combine
-            for l in ${path_in_string}
-            do 
-                combine+="$l "
-                ((nRootFilesFlag++))
+    if [ $store_upto -lt $nRootFile ]
+    then
+        echo "In $input_path folder the given number($store_upto) of file to combine is less than $nRootFile."
+        echo "So hadd is being applying just once."
+        echo "$(hadd ${output_file} ${path_in_string})"
+    else
+        combine=""	##Empty array to store files
+        intermediate_files=""   # To store the name of intermediate combinded files
+        let nRootFilesFlag=0    # To take counts and combine when it takes value n*$nRootFile
+        let newFileNo=0;
+        #moving 1-300 file and combine
+        for l in ${path_in_string}
+        do 
+            combine+="$l "
+            ((nRootFilesFlag++))
 
-                if [ $nRootFilesFlag -eq $nRootFile ]
-                then
-                    ((newFileNo++))
-                    temp="${output_path}/train_${opt}_${newFileNo}.root"
-                    echo "$(hadd ${temp} ${combine})"
-                    intermediate_files+="$temp "
-                    nRootFilesFlag=0
-                    combine=""
-                fi
-            done
-
-            ##Leftover root file
-            if [ -z "$combine" ]        # Checking whether the string is empty
+            if [ $nRootFilesFlag -eq $nRootFile ]
             then
-                    echo "No root file is leftover after running for loop $newFileNo*$nRootFile times"
-            else
                 ((newFileNo++))
-                echo "Please wait for combination of last bunch of input file from $input_path folder....."
                 temp="${output_path}/train_${opt}_${newFileNo}.root"
                 echo "$(hadd ${temp} ${combine})"
                 intermediate_files+="$temp "
+                nRootFilesFlag=0
+                combine=""
             fi
+        done
 
-
-            # Combining all files
-            echo "$(hadd ${output_file} ${intermediate_files})" 
-                                            # the 2nd arfument of "hadd" should be "STRING" only
-            echo "Deleting $intermediate_files ......"
-            $(rm -rf ${intermediate_files})
+        ##Leftover root file
+        if [ -z "$combine" ]        # Checking whether the string is empty
+        then
+                echo "No root file is leftover after running for loop $newFileNo*$nRootFile times"
+        else
+            ((newFileNo++))
+            echo "Please wait for combination of last bunch of input file from $input_path folder....."
+            temp="${output_path}/train_${opt}_${newFileNo}.root"
+            echo "$(hadd ${temp} ${combine})"
+            intermediate_files+="$temp "
         fi
+
+
+        # Combining all files
+        echo "$(hadd ${output_file} ${intermediate_files})" 
+                                        # the 2nd arfument of "hadd" should be "STRING" only
+        echo "Deleting $intermediate_files ......"
+        $(rm -rf ${intermediate_files})
     fi
 done

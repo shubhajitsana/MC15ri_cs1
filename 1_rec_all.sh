@@ -10,10 +10,12 @@ steering_file="$path/b2d.py"
 echo "Steering file is $steering_file"
 
 # Strating reconstruction
-declare -a options=("charged" "mixed" "uubar" "ddbar" "ssbar" "ccbar") #"mixed" 
+declare -a options=("charged" "mixed" "uubar" "ddbar" "ssbar" "ccbar" "signal") 
 
 for opt in "${options[@]}"
 do
+    # Setting different inpput and output folder for 
+    # Separately reconstructing from signal MC and generic MC
     # path of output files
     output_folder_name="$path/data/$opt"        
     if [ -d "$output_folder_name" ]
@@ -26,10 +28,16 @@ do
     echo "Name of the folder of output file is $output_folder_name"
 
     # path of input files
-    input_datapath='/group/belle2/dataprod/MC/MC15ri'
-    input_folder_name="$input_datapath/$opt/sub00"    
+    if [[ $opt == "signal" ]]
+    then
+        input_datapath='/home/belle2/ssana/Official_signalMC'
+        input_folder_name="$input_datapath/sub00"
+    else
+        input_datapath='/group/belle2/dataprod/MC/MC15ri'
+        input_folder_name="$input_datapath/$opt/sub00"
+    fi
     echo "Name of the folder of Input file is $input_folder_name"
-
+    
     ###########################################################
     # Reading file name in given folder
     input_filelist=$(ls ${input_folder_name}/*.root)

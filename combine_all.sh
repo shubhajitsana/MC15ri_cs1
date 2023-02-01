@@ -22,7 +22,7 @@ all_combine_output="$output_path/all.root"
 let nRootFile=300
 
 #combining for charged folders
-declare -a options=("charged" "mixed" "uubar" "ddbar" "ssbar" "ccbar") #"mixed" 
+declare -a options=("charged" "mixed" "uubar" "ddbar" "ssbar" "ccbar" "signal") 
 
 for opt in "${options[@]}"
 do
@@ -42,46 +42,53 @@ do
         echo "Please wait for combination of $nRootFile input file from $input_path folder....."
 
         ###########################start combining##################
-        combine=""	##Empty array to store files
-        intermediate_files=""   # To store the name of intermediate combinded files
-        let nRootFilesFlag=0
-        let newFileNo=0;
-        #moving 1-300 file and combine
-        for l in $input_files
-        do 
-            combine+="$l "
-            ((nRootFilesFlag++))
+        if [ $input_file_count -lt $nRootFile ]
+        then
+            echo "In $input_path folder the number($input_file_count) of file to combine is less than $nRootFile."
+            echo "So hadd is being applying just once."
+            echo "$(hadd ${output_file} ${path_in_string})"
+        else
+            combine=""	##Empty array to store files
+            intermediate_files=""   # To store the name of intermediate combinded files
+            let nRootFilesFlag=0
+            let newFileNo=0;
+            #moving 1-300 file and combine
+            for l in $input_files
+            do 
+                combine+="$l "
+                ((nRootFilesFlag++))
 
-            if [ $nRootFilesFlag -eq $nRootFile ]
+                if [ $nRootFilesFlag -eq $nRootFile ]
+                then
+                    ((newFileNo++))
+                    temp="${output_path}/${opt}_${newFileNo}.root"
+                    echo "$(hadd ${temp} ${combine})"
+                    intermediate_files+="$temp "
+                    nRootFilesFlag=0
+                    combine=""
+                fi
+            done
+
+            ##Leftover root file
+            if [ -z "$combine" ]        # Checking whether the string is empty
             then
+                    echo "No root file is leftover after running for loop N*$nRootFile times"
+            else
                 ((newFileNo++))
+                echo "Please wait for combination of last bunch of input file from $input_path folder....."
                 temp="${output_path}/${opt}_${newFileNo}.root"
                 echo "$(hadd ${temp} ${combine})"
                 intermediate_files+="$temp "
-                nRootFilesFlag=0
-                combine=""
             fi
-        done
 
-        ##Leftover root file
-        if [ -z "$combine" ]        # Checking whether the string is empty
-        then
-                echo "No root file is leftover after running for loop N*$nRootFile times"
-        else
-            ((newFileNo++))
-            echo "Please wait for combination of last bunch of input file from $input_path folder....."
-            temp="${output_path}/${opt}_${newFileNo}.root"
-            echo "$(hadd ${temp} ${combine})"
-            intermediate_files+="$temp "
+
+            # Combining all files
+            echo "$(hadd ${output_file} ${intermediate_files})" 
+                                            # the 2nd arfument of "hadd" should be "STRING" only
+            all_combine_input+="$output_file "  # Making a string to store output file name to combine all
+            echo "Deleting $intermediate_files ......"
+            $(rm -rf ${intermediate_files})
         fi
-
-
-        # Combining all files
-        echo "$(hadd ${output_file} ${intermediate_files})" 
-                                        # the 2nd arfument of "hadd" should be "STRING" only
-        all_combine_input+="$output_file "  # Making a string to store output file name to combine all
-        echo "Deleting $intermediate_files ......"
-        $(rm -rf ${intermediate_files})
     fi
 done
 

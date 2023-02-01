@@ -41,14 +41,14 @@ using namespace std;
 
 void mbcfit(){ 
   /*******************Fit Variables***********************************/
-  RooRealVar mbc("mbc","M_{bc} (GeV)",5.26,5.30);
+  RooRealVar mbc("mbc","M_{bc} (GeV)",5.23,5.32);
   /**defining DATAFRAME{unbinned histogram}(FROM FIT VARIABLE) TO FIT AND PLOT**/
   RooDataSet* data=new RooDataSet("data","data",RooArgSet(mbc));
 
 
   /*******************Input root file**********************************/
   TChain* chain=new TChain();
-  chain->Add("/home/sana/ssana/MC15ri/data/charged/mdst_000001_prod00024816_task10020000001.root/tree");
+  chain->Add("/home/sana/ssana/15_data/combined/all.root/tree");
 
   Double_t  o_de, o_md0, o_mbc, o_r2, o_kid,o_pid,sig;
   Int_t run;
@@ -102,7 +102,7 @@ void mbcfit(){
   RooRealVar n_bkg("n_bkg", "n_bkg", back_count, 0., event_count);//95000
   RooAddPdf sum("sum","sum",RooArgList(gauss1,argus),RooArgList(n_sig, n_bkg));//adding two pdf
   
-  RooFitResult *result = sum.fitTo(*data, Range(5.26,5.30));//fitting
+  RooFitResult *result = sum.fitTo(*data, Range(5.23,5.32));//fitting
   /****************************FIT COMPLETE*************************************/
 
   /*********************Start Plotting and showing outpouts*****************/
@@ -116,10 +116,12 @@ void mbcfit(){
 
   //Extract info. from fitting frame and showing
   cout<<"chisq of the fit is :"<<frame->chiSquare()<<endl;// You have to get the chi-square of the fit from MassFrame --
-  cout<<"Fit chi square/dof :"<<frame->chiSquare(7)<<endl;// the 7 tells RooFit to take into account the 7 fit parameters when calculating the number of degrees of freedom
+  cout<<"chi-square/ndof :"<<frame->chiSquare(7)<<endl;// Chi^2/(the number of degrees of freedom)
   RooHist* hpull = frame->pullHist() ;//extract pull distribution
   RooPlot* frame3 = mbc.frame(Title("Pull Distribution")) ;//Frame for plotting pull distribution
-  frame3->addPlotable(hpull,"P") ;
+  // frame3->addPlotable(hpull,"P");
+  hpull->SetFillColor(1);
+  frame3->addPlotable(hpull,"X0B") ; // "X0" is for errorbar; and "B" is for histograms
 
   //Start drawing fitting results
   TCanvas* c2 = new TCanvas("c2", "", 1500, 1500) ;

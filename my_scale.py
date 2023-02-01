@@ -39,9 +39,9 @@ NEvent[2] = intree_ssbar.GetEntries()
 NEvent[3] = intree_ccbar.GetEntries()
 
 NEvent_total = NEvent.sum()
-cross_section = np.array([0.4363, 0.1084, 0.10298, 0.3523])
+cross_section_ratio_in_percentage = np.array([0.4363, 0.1084, 0.10298, 0.3523])
 
-expect_event_total = NEvent/cross_section
+expect_event_total = NEvent/cross_section_ratio_in_percentage
 lowest_expect_event_total = expect_event_total.min()
 print(f"The total events in the given input files are {NEvent_total} . But \
     to include maximum continuum event from this data \
@@ -56,7 +56,7 @@ if lowest_expect_event_total <= NEvent_total:
 else:
     print("There is some problem during calculation of scaling factor")
 # print(f"New total event is {New_NEvent_total}")
-New_NEvent = New_NEvent_total * cross_section
+New_NEvent = New_NEvent_total * cross_section_ratio_in_percentage
 scale = NEvent/New_NEvent                                       # Setting Scale
 print(f"Previous total events in u:d:s:c(bar) folder were {NEvent}")
 print(f"New total event according to cross section should be {New_NEvent}")
