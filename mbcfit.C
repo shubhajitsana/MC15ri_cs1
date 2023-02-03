@@ -68,7 +68,7 @@ void mbcfit(){
   for(int i=0;i<nevt;i++) {
     chain->GetEntry(i);
     mbc.setVal(o_mbc);
-    if(o_md0>1.84 && o_md0<1.89 && o_mbc>5.27 && o_mbc < 5.29 && o_r2 < 0.3 && o_de < 0.15 && o_de > -0.15 && o_kid > 0.6){
+    if(o_md0>1.84 && o_md0<1.89 && o_mbc>5.27 && o_mbc < 5.29 && o_de < 0.15 && o_de > -0.15 && o_kid > 0.6){ // o_r2 < 0.3 &&
       data->add(RooArgSet(mbc));
       counter++;
     }
@@ -102,12 +102,12 @@ void mbcfit(){
   RooRealVar n_bkg("n_bkg", "n_bkg", back_count, 0., event_count);//95000
   RooAddPdf sum("sum","sum",RooArgList(gauss1,argus),RooArgList(n_sig, n_bkg));//adding two pdf
   
-  RooFitResult *result = sum.fitTo(*data, Range(5.23,5.32));//fitting
+  RooFitResult *result = sum.fitTo(*data, Range(5.27,5.29));//fitting
   /****************************FIT COMPLETE*************************************/
 
   /*********************Start Plotting and showing outpouts*****************/
   //Plotting fitted result
-  RooPlot* frame = mbc.frame(Title("Fitting Beam constrained mass of B^{#pm}"), Bins(200)) ;
+  RooPlot* frame = mbc.frame(Title("Fitting Beam constrained mass of B^{#pm}")) ;
   data->plotOn(frame, Binning(200), DataError(RooAbsData::SumW2)) ;
   sum.plotOn(frame, LineColor(kBlue)	, LineStyle(kSolid)) ;
   // sum.paramOn(frame,data,"Fit parameter", 3, "NELU", 0.1, 0.35, 0.9); //Prints the fitted parameter on the canvas

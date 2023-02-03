@@ -21,7 +21,7 @@ let store_upto_uubar=${2:-800}
 let store_upto_ddbar=${3:-255}
 let store_upto_ssbar=${4:-243}
 let store_upto_ccbar=${5:-800}
-let store_upto_signal=${6:-5}
+let store_upto_signal=${6:-6}   # we will keep 5th file for test and {(1-4)&6} files are for train
 let store_upto=0
 
 
@@ -86,6 +86,10 @@ do
     path_in_string=""  # Empty string
     for((i=0; i<$store_upto; i++))
     do
+        if [[ $opt == "signal" && $i = "4" ]]
+        then
+            continue    # we will keep 5th file for test and {(1-4)&6} files are for train
+        fi
         # path_in_string+=" $input_path/${input_file_array[i]}"
         # WHEN WE PUT "*" IN "ls" COMMAND, IT RETURNS FULL PATHNAME ALSO.
         path_in_string+=" ${input_file_array[i]}"
@@ -97,7 +101,7 @@ do
     then
         echo "$output_file already exists."
         $(rm -f ${output_file})
-        echo "So $output_file has been deleted. Plese run this bash file again."
+        echo "So $output_file has been deleted and a new file will be generated for training."
     fi
 
     ###########################start combining##################

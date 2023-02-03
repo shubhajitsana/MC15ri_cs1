@@ -24,8 +24,8 @@ for iEvent in range(inTree.GetEntries()):
     o_r2 = getattr(inTree, 'R2')
     o_kid = getattr(inTree, 'Kp_PID_bin_kaon')
     # o_ = getattr(inTree, '')
-    if((o_md0>1.84) and (o_md0<1.89) and (o_mbc>5.23) and (o_mbc < 5.29) and (o_r2 < 0.3) and (o_de < 0.05) and (o_de > -0.05) and (o_kid > 0.6)):
-        data.add(ROOT.RooArgSet(mbc))
+    if((o_md0>1.84) and (o_md0<1.89) and (o_mbc>5.27) and (o_mbc < 5.29) and (o_de < 0.15) and (o_de > -0.15) and (o_kid > 0.6)): #(o_r2 < 0.3) and 
+        data.add({mbc})
         counter += 1
 
 
@@ -46,7 +46,7 @@ gauss1 = ROOT.RooGaussian("gauss1","gaussian PDF",mbc,sigmean,sigwidth) #Gauss1 
 
 # // --- Build Argus background PDF ---
 argpar = ROOT.RooRealVar("argpar","argus shape parameter",-34.70)#,-100.,-1.)
-argus = ROOT.RooArgusBG("argus","Argus PDF",mbc, RooConst=5.29, argpar) #mbc background		 
+argus = ROOT.RooArgusBG("argus","Argus PDF",mbc, 5.29, argpar,0.5) #mbc background		 
     
 # //Initialization of parameter before adding two pdf
 event_count = counter 
@@ -65,7 +65,7 @@ data.plotOn(frame)
 sum.plotOn(frame)
 sum.plotOn(frame) 
 #Prints the fitted parameter on the canvas
-sum.paramOn(frame, FillColor="kRed", Label="Fit parameters", Layout=(0.1, 0.35, 0.9),Format=("NELU", AutoPrecision=1), ShowConstants=True)
+sum.paramOn(frame, FillColor="kRed", Label="Fit parameters", Layout=(0.1, 0.35, 0.9),Format="NELU", AutoPrecision=1, ShowConstants=True)
 sum.plotOn(frame, Components="gauss1",LineColor="kRed", LineStyle="--")
 sum.plotOn(frame, Components="argus",LineColor="kMagenta", LineStyle="--")
 

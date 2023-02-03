@@ -67,8 +67,8 @@ simpleCSVariables = [
     # "KSFWVariables(et)",
     # "KSFWVariables(mm2)",
     # "KSFWVariables(hso00)",
-    # "KSFWVariables(hso01)", # has some issue
-    # "KSFWVariables(hso02)",
+    "KSFWVariables(hso01)", # has some issue
+    "KSFWVariables(hso02)",
     # "KSFWVariables(hso03)", # has some issue
     # "KSFWVariables(hso04)",
     "KSFWVariables(hso10)",

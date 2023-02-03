@@ -12,7 +12,7 @@ input_path="$path/cs/train"
 
 
 # Create Output Directory to save combined root files
-output_path="$path/cs/train/signal_scaled"
+output_path="$input_path/signal_scaled"
 if [ -d "$output_path" ]
 then
     echo "$output_path already exists."

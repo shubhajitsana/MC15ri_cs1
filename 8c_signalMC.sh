@@ -18,3 +18,4 @@ fi
 
 echo "$(cp $input_path/test_signal.root $output_path/test_signal.root)"
         #it's just copying a file from one folder to another folder with same name
+echo "$output_path/test_signal.root has been created to be combined."

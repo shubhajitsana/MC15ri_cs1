@@ -3,6 +3,10 @@
 # To run this code we need steering file named "my_train.py" in same directory
 path=$(pwd)
 
+# path of steering file code
+steering_file="$path/my_train.py"                      
+echo "Steering file is $steering_file"
+
 # Output-Input Directory to save combined root files
 input_path="$path/cs/train/signal_scaled"
 output_path="$path/cs/test"
@@ -18,4 +22,4 @@ input_file="$input_path/train.root"
 output_file="$output_path/MVAFastBDT.root"
 
 # command for train
-basf2 my_train.py $input_file $output_file
+echo "$(basf2 my_train.py $input_file $output_file)"

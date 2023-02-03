@@ -5,7 +5,7 @@ path=$(pwd)
 train_file="$path/cs/train/signal_scaled/train.root"
 weightfile="$path/cs/test/MVAFastBDT.root"
 test_file="$path/cs/test/signal_scaled/test.root"
-output_report="$path/cs/evaluate.zip"
+output_report="$path/cs/test/evaluate.zip"
 
 # ################this move is required to remove "RuntimeWarning: invalid value encountered in true_divide
 # #   purity = cumsignal / (cumsignal + cumbckgrd)"###################################
@@ -25,7 +25,11 @@ then
     $(rm -f ${output_report})
     echo "So $output_report has been deleted. And new report will be generated."
 fi
-echo "$(basf2_mva_evaluate.py -id $weightfile -train $train_file -data $test_file -o $output_report)"
+# echo "$(basf2_mva_evaluate.py -id $weightfile -train $train_file -data $test_file -o $output_report)"
+basf2_mva_evaluate.py -id $weightfile -train $train_file -data $test_file -o $output_report
+            # this line finally solves runtimewarning
+            # ################this move is required to remove "RuntimeWarning: invalid value encountered in true_divide
+            # #   purity = cumsignal / (cumsignal + cumbckgrd)"###################################
 
 # # Evaluate and Puting back the files at their own places again#############################
 # echo "$(basf2_mva_evaluate.py -id MVAFastBDT.root -train train.root -data test.root -o evaluate.zip)"
