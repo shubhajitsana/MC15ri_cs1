@@ -13,7 +13,10 @@ import variables.MCGenTopo as vmc   # module( interface of basf2 to TopoAna)
 
 # get input file number from the command line
 file_name = sys.argv[1]
-file_number = file_name.split("sub00/")
+if "sub00/" in file_name :
+    file_number = file_name.split("sub00/")
+else :
+    file_number = file_name.split("sub01/")
 input_filename = file_number[1]
 
 # get output folder name from the command line

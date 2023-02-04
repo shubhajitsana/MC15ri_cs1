@@ -11,9 +11,12 @@ import vertex as vx
 
 # get input file number from the command line
 file_name = sys.argv[1]
-file_number = file_name.split("sub00/")
+if "sub00/" in file_name :
+    file_number = file_name.split("sub00/")
+else :
+    file_number = file_name.split("sub01/")
 input_filename = file_number[1]
-
+# 
 # get output folder name from the command line
 output_foldername = sys.argv[2]
 output_filename = input_filename
@@ -64,33 +67,33 @@ simpleCSVariables = [
     "thrustOm",
     "cosTBTO",
     "cosTBz",
-    # "KSFWVariables(et)",
-    # "KSFWVariables(mm2)",
-    # "KSFWVariables(hso00)",
+    "KSFWVariables(et)",
+    "KSFWVariables(mm2)",
+    "KSFWVariables(hso00)",
     "KSFWVariables(hso01)", # has some issue
     "KSFWVariables(hso02)",
-    # "KSFWVariables(hso03)", # has some issue
-    # "KSFWVariables(hso04)",
+    "KSFWVariables(hso03)", # has some issue
+    "KSFWVariables(hso04)",
     "KSFWVariables(hso10)",
     "KSFWVariables(hso12)",
-    # "KSFWVariables(hso14)",
+    "KSFWVariables(hso14)",
     "KSFWVariables(hso20)",
-    # "KSFWVariables(hso22)",
-    # "KSFWVariables(hso24)",
+    "KSFWVariables(hso22)",
+    "KSFWVariables(hso24)",
     "KSFWVariables(hoo0)",
-    # "KSFWVariables(hoo1)",
-    # "KSFWVariables(hoo2)",
-    # "KSFWVariables(hoo3)",
-    # "KSFWVariables(hoo4)",
+    "KSFWVariables(hoo1)",
+    "KSFWVariables(hoo2)",
+    "KSFWVariables(hoo3)",
+    "KSFWVariables(hoo4)",
     "CleoConeCS(1)",
-    # "CleoConeCS(2)",
-    # "CleoConeCS(3)",
-    # "CleoConeCS(4)",
-    # "CleoConeCS(5)",
-    # "CleoConeCS(6)",
-    # "CleoConeCS(7)",
-    # "CleoConeCS(8)",
-    # "CleoConeCS(9)",
+    "CleoConeCS(2)",
+    "CleoConeCS(3)",
+    "CleoConeCS(4)",
+    "CleoConeCS(5)",
+    "CleoConeCS(6)",
+    "CleoConeCS(7)",
+    "CleoConeCS(8)",
+    "CleoConeCS(9)",
 ]
 vm.addAlias("ContProb", "extraInfo(ContinuumProbability)")
 

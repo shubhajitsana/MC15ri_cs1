@@ -17,10 +17,10 @@ weightfile="$path/cs/test/MVAFastBDT.root"
 echo "Path of weightfile is $weightfile"
 
 let rec_start_charged=${1:-481}-1        #as for loop starts from next numbering
-let rec_start_uubar=${2:-801}-1
+let rec_start_uubar=${2:-1020}-1
 let rec_start_ddbar=${3:-256}-1
 let rec_start_ssbar=${4:-244}-1
-let rec_start_ccbar=${5:-801}-1
+let rec_start_ccbar=${5:-925}-1
 let rec_start_signal=${6:-5}-1  # we will keep 5th file for test and {(1-4)&6} files are for train
 let rec_start=0
 
@@ -40,23 +40,49 @@ do
     fi
     echo "Name of the folder of output file is $output_folder_name"
 
-    # path of input files
+    # Setting different input folder for 
+    # Separately reconstructing from signal MC and generic MC
+    # path of input files and     # Reading file name in given folder
     if [[ $opt == "signal" ]]
     then
         input_datapath='/home/belle2/ssana/Official_signalMC'
         input_folder_name="$input_datapath/sub00"
+        echo "Name of input folder is $input_folder_name"
+
+        input_filelist=$(ls ${input_folder_name}/*.root)
+        input_file_count=$(ls ${input_folder_name}/*.root | wc -l)
+        echo "Number of input file in $input_folder_name is $input_file_count"
+    elif [[ $opt == "uubar" || $opt == "ccbar" ]]
+    then
+        input_datapath='/group/belle2/dataprod/MC/MC15ri'
+        input_folder_name_1="$input_datapath/$opt/sub00"
+        input_folder_name_2="$input_datapath/$opt/sub01"
+        echo "Name of input folder are $input_folder_name_1 and $input_folder_name_2"
+
+        input_filelist=$(ls ${input_folder_name_1}/*.root)
+        input_filelist+=" "
+        input_filelist+=$(ls ${input_folder_name_2}/*.root)
+
+        input_file_count_1=$(ls ${input_folder_name_1}/*.root | wc -l)
+        input_file_count_2=$(ls ${input_folder_name_2}/*.root | wc -l)
+        input_file_count=$(($input_file_count_1 + $input_file_count_2))
+        echo "Number of input file in $input_folder_name_1 and $input_folder_name_2 is $input_file_count"
+
     else
         input_datapath='/group/belle2/dataprod/MC/MC15ri'
         input_folder_name="$input_datapath/$opt/sub00"
-    fi
-    echo "Name of the folder of Input file is $input_folder_name"
-    
+        echo "Name of input folder is $input_folder_name"
 
+        input_filelist=$(ls ${input_folder_name}/*.root)
+        input_file_count=$(ls ${input_folder_name}/*.root | wc -l)
+        echo "Number of input file in $input_folder_name is $input_file_count"
+    fi
+    
     ###########################################################
     # Reading file name in given folder
-    input_filelist=$(ls ${input_folder_name}/*.root)
-    input_file_count=$(ls ${input_folder_name}/*.root | wc -l)
-    echo "Number of input file in $input_folder_name is $input_file_count"
+    # input_filelist=$(ls ${input_folder_name}/*.root)
+    # input_file_count=$(ls ${input_folder_name}/*.root | wc -l)
+    # echo "Number of input file in $input_folder_name is $input_file_count"
 
     #Storing filename in array from long single string
     declare -a input_file_array=()
@@ -69,16 +95,12 @@ do
     length_input_file_array=${#input_file_array[@]}
 
     #checking whether array dimension is ok
-    if [ $input_file_count -eq $count ]
+    if [[ $input_file_count == $count && $input_file_count == $length_input_file_array ]]
     then
-        if [ $input_file_count -eq $length_input_file_array ]
-        then
-            echo "Input file count and input file array dimension are same."
-        else
-            echo "There is some discrepancy between Input file count and input file array dimension"
-            echo "Because Input file count is $input_file_count but array dimension is $length_input_file_array"
-
-        fi
+        echo "Input file count and input file array dimension are same."
+    else
+        echo "There is some discrepancy between Input file count and input file array dimension"
+        echo "Because Input file count is $input_file_count but array dimension is $length_input_file_array"
     fi
 
     # Finalizing the starting number of array for reconstruction

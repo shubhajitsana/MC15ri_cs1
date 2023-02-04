@@ -13,7 +13,7 @@ if [ -f "$output_file" ]
 then
     echo "$output_file already exists."
     $(rm -f ${output_file})
-    echo "So $output_file has been deleted."
+    echo "So $output_file has been deleted and a new file will be generated for training."
 fi
 
 # Reading input files
