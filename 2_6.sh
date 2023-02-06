@@ -1,5 +1,5 @@
 #!/bin/bash
-sh 2_combine_for_train.sh
+sh 2_combine_for_train_5pm.sh
 sh 3a_signal_only.sh
 sh 3b_scale.sh
 sh 3c_signalMC.sh
