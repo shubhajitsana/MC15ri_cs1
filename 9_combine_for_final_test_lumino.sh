@@ -13,17 +13,17 @@ if [ -f "$output_file" ]
 then
     echo "$output_file already exists."
     $(rm -f ${output_file})
-    echo "So $output_file has been deleted."
+    echo "So $output_file has been deleted and a new file will be generated for testing."
 fi
 
 # Reading input files
-input_files=$(ls ${input_path}/*.root)
-input_file_count=$(ls ${input_path}/*.root | wc -l)
-echo "Number of input files in $input_path is $input_file_count"
+# input_files=$(ls ${input_path}/*.root)
+# input_file_count=$(ls ${input_path}/*.root | wc -l)
+# echo "Number of input files in $input_path is $input_file_count"
 
-# input_files="$input_path/test_bbbar.root $input_path/test_uubar.root $input_path/test_ddbar.root"
-# input_files+=" "
-# input_files+="$input_path/test_ssbar.root $input_path/test_ccbar.root"
+input_files="$input_path/test_bbbar.root $input_path/test_uubar.root $input_path/test_ddbar.root"
+input_files+=" "
+input_files+="$input_path/test_ssbar.root $input_path/test_ccbar.root"
 
 # Combinig files
 echo "Please wait for Combinded output file from $input_path folder....."

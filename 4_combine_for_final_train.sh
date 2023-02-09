@@ -21,6 +21,10 @@ input_files=$(ls ${input_path}/*.root)
 input_file_count=$(ls ${input_path}/*.root | wc -l)
 echo "Number of input files in $input_path is $input_file_count"
 
+# input_files="$input_path/train_bbbar.root $input_path/train_uubar.root $input_path/train_ddbar.root"
+# input_files+=" "
+# input_files+="$input_path/train_ssbar.root $input_path/train_ccbar.root"
+
 # Combinig files
 echo "Please wait for Combinded output file from $input_path folder....."
 # echo "$(hadd ${output_path}/train.root ${path_in_string})" 

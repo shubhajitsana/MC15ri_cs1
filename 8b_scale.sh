@@ -35,4 +35,4 @@ done
 
 # Command for scaling
 # echo "$(pyroot my_scale.py $in4out4)"         #For own system
-echo "$(basf2 my_scale.py $in4out4)"            #For BELLE II server
+echo "$(basf2 $pyrt_file $in4out4)"            #For BELLE II server

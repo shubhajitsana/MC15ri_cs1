@@ -6,7 +6,7 @@
 path=$(pwd)
 
 # path of steering file code
-steering_file="$path/b2d.py"                      
+steering_file="$path/b2d_bcs_veto.py"                      
 echo "Steering file is $steering_file"
 
 # Strating reconstruction

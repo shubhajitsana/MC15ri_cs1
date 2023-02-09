@@ -28,4 +28,4 @@ in4out4+="$output_path/test_charged.root "
 
 # Command for scaling
 # echo "$(pyroot my_signal.py $in4out4)"       #For own system
-echo "$(basf2 my_signal.py $in4out4)"            #For BELLE II server
+echo "$(basf2 $pyrt_file $in4out4)"            #For BELLE II server

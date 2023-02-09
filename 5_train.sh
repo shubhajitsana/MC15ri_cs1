@@ -22,4 +22,4 @@ input_file="$input_path/train.root"
 output_file="$output_path/MVAFastBDT.root"
 
 # command for train
-echo "$(basf2 my_train.py $input_file $output_file)"
+echo "$(basf2 $steering_file $input_file $output_file)"

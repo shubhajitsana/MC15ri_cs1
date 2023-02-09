@@ -40,11 +40,11 @@ using namespace RooFit ;
 using namespace std;
 //int main(){
 
-void mbcfit(){
+void defit(){
     /*******************Fit Variables***********************************/
-    RooRealVar mbc("mbc","M_{bc} (GeV)",5.23,5.29);
+    RooRealVar deltae("deltae","#DeltaE (GeV)", -0.1, 0.1);
     /**defining DATAFRAME{unbinned histogram}(FROM FIT VARIABLE) TO FIT AND PLOT**/
-    RooDataSet* data=new RooDataSet("data","data",RooArgSet(mbc));
+    RooDataSet* data=new RooDataSet("data","data",RooArgSet(deltae));
     /*******************Input root file**********************************/
     TChain* chain=new TChain();
     chain->Add("/home/belle2/ssana/MC15ri/cs/test/signal_scaled/test.root/tree");
@@ -63,34 +63,34 @@ void mbcfit(){
     // chain->SetBranchAddress("pi_PID_bin_pion",&pid3);
     // chain->SetBranchAddress("__run__",&run);
     
-
+    // D0_bar_InvM >1.84 && D0_bar_InvM <1.89 && Mbc>5.27 && Mbc < 5.29 && deltaE < 0.1 && deltaE > -0.1 && Kp_PID_bin_kaon > 0.6 && ContProb < 0.86
     //Loading data 
     Double_t counter =0;
     for(int l=0;l<nevt3;l++) {
-      chain->GetEntry(l);
-      mbc.setVal(mbc3);
-      if(md03>1.84 && md03<1.89 && mbc3>5.23 && mbc3 < 5.29 && de3 < 0.1 && de3 > -0.1 && kid3 > 0.6 && cont_prob < 0.86){//&& r23 < 0.3  )// && (run <= 1702 || run >= 1835))
-          data->add(RooArgSet(mbc));
-          counter++;
-      }
+        chain->GetEntry(l);
+        deltae.setVal(de3);
+        if(md03>1.84 && md03<1.89 && mbc3>5.27 && mbc3 < 5.29 && de3 < 0.1 && de3 > -0.1 && kid3 > 0.6 && cont_prob < 0.86){//&& r23 < 0.3  )// && (run <= 1702 || run >= 1835))
+            data->add(RooArgSet(deltae));
+            counter++;
+        }
     }
 
     /*****************************Delta E Fit***********************/
     // --- Build Signal PDF ---
-    RooRealVar mean1("mean1","mean of Gaussian-1",5.279145,5.27,5.29);
-    RooRealVar mean2("mean2","mean of Gaussian-2",5.279260,5.27,5.29);
+    RooRealVar mean1("mean1","mean of Gaussian-1",-0.001,-0.02,0.02);
+    RooRealVar mean2("mean2","mean of Gaussian-2",0.002,-0.02,0.02);
     RooRealVar sigma1("sigma1","sigma of Gaussian-1",0., 0., 1);	
     RooRealVar sigma2("sigma2","sigma of Gaussian-2",0.01191,0.00000001,1);
 
-    RooGaussian sig1("sig1","Gaussian-1",mbc,mean1,sigma1);  
-    RooGaussian sig2("sig2","Gaussian-2",mbc,mean2,sigma2);
+    RooGaussian sig1("sig1","Gaussian-1",deltae,mean1,sigma1);  
+    RooGaussian sig2("sig2","Gaussian-2",deltae,mean2,sigma2);
 
     RooRealVar fsig_1("frac_gaussians", "signal fraction", 0.5,0.,1.);
     RooAddPdf twoGaussians("twoGaussians", "sum of two Gaussians ",RooArgList(sig1, sig2), RooArgList(fsig_1));
 
     // --- Build Argus background PDF ---
-  RooRealVar argpar("argpar","argus shape parameter",-34.70,-100.,-1.) ;
-  RooArgusBG bkg("argus","Argus PDF",mbc,RooConst(5.29),argpar) ; //mbc background
+    RooRealVar b1("Chbyshv-prm", "Chbyshv-prm", -0.062, -10., 10.);
+    RooChebychev bkg("bkg","Background",deltae,RooArgSet(b1)) ;
 
     //Initialization of parameter before adding two pdf
     // cout<<"Total number of events which are used to fitting are : "<<counter<<endl;
@@ -105,11 +105,11 @@ void mbcfit(){
 
     /*********************Start Plotting and showing outpouts*****************/
     //Plotting fitted result
-    RooPlot* deframe = mbc.frame(Title("Fitting M_{bc} of B^{#pm}"), Bins(200)) ;                          
-    data->plotOn(deframe, Binning(200), DataError(RooAbsData::SumW2)) ;
+    RooPlot* deframe = deltae.frame(Title("Fitting #DeltaE of B^{#pm}"), Bins(300)) ;                          
+    data->plotOn(deframe, Binning(300), DataError(RooAbsData::SumW2)) ;
     sum.plotOn(deframe, LineColor(kBlue)	, LineStyle(kSolid)) ;
     // sum.paramOn(deframe,data,"", 2, Format("NEU"),AutoPrecision(1)), 0.7, 0.9, 0.9); //"NELU",  Prints the fitted parameter on the canvas
-    sum.paramOn(deframe,data,"", 2, "NU", 0.1, 0.3, 0.9); //"NELU",  Prints the fitted parameter on the canvas
+    sum.paramOn(deframe,data,"", 2, "NU", 0.7, 0.9, 0.9); //"NELU",  Prints the fitted parameter on the canvas
     sum.plotOn(deframe,Components(sig1),LineColor(kGreen),LineStyle(kDashed)) ;
     sum.plotOn(deframe,Components(sig2),LineColor(kBlack),LineStyle(kDashed)) ;
     sum.plotOn(deframe,Components(twoGaussians),LineColor(kRed),LineStyle(kDashed));
@@ -119,7 +119,7 @@ void mbcfit(){
     cout<<"chisq of the fit is : "<<deframe->chiSquare()<<endl;//chi-square of the fit
     cout<<"chi-square/ndof : "<<deframe->chiSquare(7)<<endl;// Chi^2/(the number of degrees of freedom)
     RooHist* hpull = deframe->pullHist() ;
-    RooPlot* frame3 = mbc.frame(Title("Pull Distribution")) ;
+    RooPlot* frame3 = deltae.frame(Title("Pull Distribution")) ;
     hpull->SetFillColor(1);
     frame3->addPlotable(hpull,"X0B"); // "X0" is for errorbar; and "B" is for histograms
 
@@ -131,7 +131,7 @@ void mbcfit(){
     pad1->cd();  
     deframe->Draw() ;
     // Adding legend
-    TLegend *legend1 = new TLegend(0.3,0.7,0.5,0.9);
+    TLegend *legend1 = new TLegend(0.1,0.7,0.3,0.9);
     TLegendEntry *entry = legend1->AddEntry("sig1","1st Gaussian pdf","l");
     entry->SetLineColor(kGreen);
     entry->SetLineStyle(kDashed);
@@ -141,7 +141,7 @@ void mbcfit(){
     entry = legend1->AddEntry("twoGaussians","Combined signal pdf","l");
     entry->SetLineColor(kRed);
     entry->SetLineStyle(kDashed);
-    entry = legend1->AddEntry("bkg","bkg-ARGUS","l");
+    entry = legend1->AddEntry("bkg","bkg-Chebyshev","l");
     entry->SetLineColor(kMagenta);
     entry->SetLineStyle(kDashed);
     entry = legend1->AddEntry("sum","Fitted pdf","l");
@@ -157,7 +157,7 @@ void mbcfit(){
     frame3->SetLineStyle(9);
     frame3->GetYaxis()->SetNdivisions(505);
     frame3->GetYaxis()->SetTitle("#sqrt{#chi^{2}}"); 
-    frame3->GetXaxis()->SetTitle("M_{bc} (GeV)"); 
+    frame3->GetXaxis()->SetTitle("#DeltaE (GeV)"); 
     frame3->GetXaxis()->SetTitleSize(0.13);
     frame3->GetYaxis()->SetTitleSize(0.15);
     frame3->GetXaxis()->SetLabelSize(0.120);
@@ -171,7 +171,7 @@ void mbcfit(){
     frame3->GetXaxis()->CenterTitle(true);
     frame3->Draw("AXISSAME");
 
-    c1->Print("mbc_plot/mbc_fit_4.png");
+    c1->Print("de_plot/de_fit.png");
     cout<<"Total number of events which are used to fitting are : "<<counter<<endl;
     cout<<"chisq of the fit is :"<<deframe->chiSquare()<<endl;//chi-square of the fit
     cout<<"chi-square/ndof :"<<deframe->chiSquare(7)<<endl;// Chi^2/(the number of degrees of freedom)

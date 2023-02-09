@@ -8,7 +8,7 @@
 path=$(pwd)
 
 # path of steering file code
-steering_file="$path/b2d_test.py"                      
+steering_file="$path/b2d_test_de_mbc.py"                      
 # steering_file="$path/b2d_test_fbdt_output_with_other_variable.py"                      
 echo "Steering file is $steering_file"
 
@@ -21,8 +21,8 @@ let rec_start_uubar=${2:-1020}-1
 let rec_start_ddbar=${3:-256}-1
 let rec_start_ssbar=${4:-244}-1
 let rec_start_ccbar=${5:-925}-1
-let rec_start_signal=${6:-6}-1
-# let rec_start_signal=${6:-5}-1  # we will keep 5th file for test and {(1-4)&6} files are for train
+# let rec_start_signal=${6:-6}-1
+let rec_start_signal=${6:-5}-1  # we will keep 5th file for test and {(1-4)&6} files are for train
 let rec_start=0
 
 # Strating reconstruction
@@ -129,10 +129,10 @@ do
     let i=0
     for((i=$rec_start; i<$length_input_file_array; i++))
     do
-        # if [[ $opt == "signal" && $i = "5" ]]
-        # then
-        #     continue    # we will keep 5th file for test and {(1-4)&6} files are for train
-        # fi
+        if [[ $opt == "signal" && $i = "5" ]]
+        then
+            continue    # we will keep 5th file for test and {(1-4)&6} files are for train
+        fi
         echo "$(bsub -q s "basf2 $steering_file ${input_file_array[$i]} $output_folder_name $weightfile")"
     done
 done

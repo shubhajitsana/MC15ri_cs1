@@ -15,7 +15,7 @@ print(f"The output file is {output_filename}")
 inFile = ROOT.TFile.Open(f"{input_filename}")
 inTree = inFile.Get('tree')
 
-outFile = ROOT.TFile.Open(f"{output_filename}","RECREATE"); 
+outFile = ROOT.TFile.Open(f"{output_filename}","RECREATE")
 outTree = inTree.CloneTree(0)
 
 # Filtering only Signal Events

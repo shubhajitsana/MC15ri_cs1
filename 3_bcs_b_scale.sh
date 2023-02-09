@@ -4,7 +4,7 @@
 path=$(pwd)
 
 # path of steering file code
-pyrt_file="$path/my_scale.py"                      
+pyrt_file="$path/my_scale_bcs_lumino.py"                      
 echo "Steering file is $pyrt_file"
 
 # Input Directory
@@ -22,17 +22,17 @@ else
 fi
 
 # Preparing string for piping in pyroot code
-declare -a options=("uubar" "ddbar" "ssbar" "ccbar")
-in4out4=""
+declare -a options=("uubar" "ddbar" "ssbar" "ccbar" "bbbar")
+in5out5=""
 for opt in "${options[@]}"
 do
-    in4out4+="$input_path/train_$opt.root "
+    in5out5+="$input_path/train_$opt.root "
 done
 for opt in "${options[@]}"
 do
-    in4out4+="$output_path/train_$opt.root "
+    in5out5+="$output_path/train_$opt.root "
 done
 
 # Command for scaling
-# echo "$(pyroot my_scale.py $in4out4)"         #For own system
-echo "$(basf2 $pyrt_file $in4out4)"            #For BELLE II server
+# echo "$(pyroot my_scale.py $in5out5)"         #For own system
+echo "$(basf2 $pyrt_file $in5out5)"          #For BELLE II server

@@ -43,7 +43,7 @@ ma.reconstructDecay("anti-D0 -> K+ pi-",cut="1.84 < M < 1.89",path=main)
 ma.matchMCTruth("anti-D0", path=main)
 vx.kFit("anti-D0", conf_level=0.0, fit_type='massvertex', path=main)
 
-ma.reconstructDecay("B+ -> [anti-D0 -> K+ pi-] pi+ pi- pi+",cut="Mbc > 5.27 and abs(deltaE) < 0.15",path=main)
+ma.reconstructDecay("B+ -> [anti-D0 -> K+ pi-] pi+ pi- pi+",cut="5.2 < Mbc < 5.3 and abs(deltaE) < 0.3",path=main)
 ma.matchMCTruth("B+", path=main)
 
 
