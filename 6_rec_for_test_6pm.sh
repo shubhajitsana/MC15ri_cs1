@@ -8,7 +8,7 @@
 path=$(pwd)
 
 # path of steering file code
-steering_file="$path/b2d_test_de_mbc.py"                      
+steering_file="$path/b2d_test_bcs.py"                      
 # steering_file="$path/b2d_test_fbdt_output_with_other_variable.py"                      
 echo "Steering file is $steering_file"
 

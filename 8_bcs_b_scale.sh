@@ -26,11 +26,11 @@ declare -a options=("uubar" "ddbar" "ssbar" "ccbar" "bbbar")
 in5out5=""
 for opt in "${options[@]}"
 do
-    in5out5+="$input_path/test_$opt.root "
+    in5out5+="$input_path/test_deltaz_filtered_$opt.root "
 done
 for opt in "${options[@]}"
 do
-    in5out5+="$output_path/test_$opt.root "
+    in5out5+="$output_path/test_deltaz_filtered_$opt.root "
 done
 
 # Command for scaling

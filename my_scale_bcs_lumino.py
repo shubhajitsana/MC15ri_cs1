@@ -12,7 +12,7 @@ output_filename = []
 for i in range(1, 6):
     input_filename.append(sys.argv[i])
 print(f"5 Input files are {input_filename}")
-for j in range(6,13):
+for j in range(6,11):
     output_filename.append(sys.argv[j])
 print(f"5 Output files are {output_filename}")
 
@@ -40,19 +40,21 @@ print(f"The event number of u,d,s,c,b(bar) are : {NEvent}")
 
 NEvent_total = NEvent.sum()
 cross_section = np.array([1.11, 1.61, 0.4, 0.38, 1.3])
-print(f"The cross sections of u,d,s,c,b(bar) are : {cross_section}")
+print(f"The cross sections of u,d,s,c,b(bar) are : {cross_section} \
+* 10^(-6) fb^-1)/(0.8 or 0.2 depending on train or test)")
 
 luminocity = NEvent/cross_section   # as events = Luminocity * cross_section
 print(f"The luminocity of u,d,s,c,b(bar) are : {luminocity}")
 lowest_luminocity = luminocity.min()
 print(f"The total events in the given input files are {NEvent_total} . But \
-    to include maximum events from this data \
-    \n(keeping effective luminocity same)\
-     \n HIGHEST number of total events should be {lowest_luminocity}") # this is the number
+to include maximum events from this data \
+\n(keeping effective luminocity same)\
+lowest luminocity is {lowest_luminocity}") # this is the number
+    #  \n HIGHEST number of total events should be {lowest_luminocity}") # this is the number
                             # using which we can include maximum continuum event following their
                             # (relative) cross section ratio - u:d:s:c = 1.61:0.4:0.38:1.3
 if lowest_luminocity <= NEvent_total:
-    New_NEvent_total = np.copy(NEvent)
+    New_NEvent_total = np.zeros(5)
     for i in range(5):
         New_NEvent_total[i] = lowest_luminocity
 else:
@@ -87,6 +89,6 @@ for i in range(5):
         k += 1
 
     print(f"Afer scaling {k} events has been stored in {output_filename[i]} with luminocity \
-     ({lowest_luminocity} * 10^(-6) fb^-1)/(0.8 or 0.2 depending on train or test)")
+    ({lowest_luminocity} * 10^(-6) fb^-1)/(0.8 or 0.2 depending on train or test)")
     outTree.AutoSave()
     outFile.Close()

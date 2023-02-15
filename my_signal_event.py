@@ -24,4 +24,4 @@ for i in sys.argv[1:]:
     whole_signal_event_number += signal_event_number 
     whole_total_event_in_charged += total_event_in_charged
 print(f"There are total {whole_signal_event_number} signal events out of \
-    {whole_total_event_in_charged} reconstructed events in given list of files.")
+{whole_total_event_in_charged} reconstructed events in given list of files.")

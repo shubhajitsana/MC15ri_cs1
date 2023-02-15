@@ -47,7 +47,7 @@ void mbcfit(){
     RooDataSet* data=new RooDataSet("data","data",RooArgSet(mbc));
     /*******************Input root file**********************************/
     TChain* chain=new TChain();
-    chain->Add("/home/belle2/ssana/MC15ri/cs/test/signal_scaled/test.root/tree");
+    chain->Add("/home/belle2/ssana/MC15ri/cs/test_1_33/signal_scaled/test.root/tree");
 
     Double_t  de3, md03, mbc3, r23, kid3,pid3,sig,cont_prob;
     Int_t run;
@@ -102,7 +102,14 @@ void mbcfit(){
     RooAddPdf sum("sum","sum",RooArgList(twoGaussians,bkg),RooArgList(n_sig, n_bkg));//adding two pdf
     sum.fitTo(*data);
     /****************************FIT COMPLETE*************************************/
-
+    mbc.setRange("twoGaussians",5.27, 5.29);     //twoGaussians is my signal pdf    //1.86,1.87 is the range we want to integrate
+    RooAbsReal *integral_sig = twoGaussians.createIntegral(mbc,NormSet(mbc),Range("twoGaussians"));
+    
+    double  Nsig = integral_sig->getVal();
+    cout<<"Signal :"<<Nsig*n_sig.getVal()<<endl;   // nsig is the signal Yield
+    double Nsigerr = n_sig.getError()*integral_sig->getVal();  
+    cout<<"Signal error = "<<Nsigerr<<endl;
+    cout<<"Signal Area "<< setprecision(4)<<Nsig<<endl;
     /*********************Start Plotting and showing outpouts*****************/
     //Plotting fitted result
     RooPlot* deframe = mbc.frame(Title("Fitting M_{bc} of B^{#pm}"), Bins(200)) ;                          
@@ -171,7 +178,7 @@ void mbcfit(){
     frame3->GetXaxis()->CenterTitle(true);
     frame3->Draw("AXISSAME");
 
-    c1->Print("mbc_plot/mbc_fit_4.png");
+    c1->Print("mbc_plot/mbc_fit_5.png");
     cout<<"Total number of events which are used to fitting are : "<<counter<<endl;
     cout<<"chisq of the fit is :"<<deframe->chiSquare()<<endl;//chi-square of the fit
     cout<<"chi-square/ndof :"<<deframe->chiSquare(7)<<endl;// Chi^2/(the number of degrees of freedom)
