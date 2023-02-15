@@ -1,4 +1,5 @@
 #!/bin/bash
+# For testing using events like 50% as signal and 50% as continuum
 sh 7_combine_for_test.sh
 sh 8_bcs_deltaz_filter.sh
 sh 8_bcs_a_signal_only.sh

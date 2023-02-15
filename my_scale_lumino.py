@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-
+# This code take all the reconstructed events from signal MC(without checking whether 
+# reconstructed events are correctly reconstructed or not)
 import ROOT
 import sys
 import numpy as np

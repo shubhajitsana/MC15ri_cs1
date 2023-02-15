@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-# This code takes ONLY PROPERLY reconstructed events from signal MC
-
+# This file scale such a way that 50% will be signal and 50% will be continnum background
 import ROOT
 import sys
 import numpy as np
@@ -31,44 +30,32 @@ intree_ccbar = infile_ccbar.Get('tree')
 intree_bbbar = infile_bbbar.Get('tree')
 
 # Counting number of events of different folder before scaling
-NEvent = np.zeros(5)
+bbbar_Event = np.zeros(4)   # vector to multiply with cross section percentage
+bbbar_Event[0] = intree_bbbar.GetEntries()
+bbbar_Event[1] = intree_bbbar.GetEntries()
+bbbar_Event[2] = intree_bbbar.GetEntries()
+bbbar_Event[3] = intree_bbbar.GetEntries()
+
+
+NEvent = np.zeros(4)
 NEvent[0] = intree_uubar.GetEntries()
 NEvent[1] = intree_ddbar.GetEntries()
 NEvent[2] = intree_ssbar.GetEntries()
 NEvent[3] = intree_ccbar.GetEntries()
-NEvent[4] = intree_bbbar.GetEntries()
-print(f"The event number of u,d,s,c,b(bar) are : {NEvent}")
+print(f"The event number of u,d,s,c(bar) are : {NEvent}")
 
 NEvent_total = NEvent.sum()
-cross_section = np.array([1.11, 1.61, 0.4, 0.38, 1.3])
-print(f"The cross sections of u,d,s,c,b(bar) are : {cross_section}")
+cross_section_ratio_in_percentage = np.array([0.4363, 0.1084, 0.10298, 0.3523])
+print(f"The cross sections ratio of u,d,s,c(bar) are : {cross_section_ratio_in_percentage}")
 
-luminocity = NEvent/cross_section   # as events = Luminocity * cross_section
-print(f"The luminocity of u,d,s,c,b(bar) are : {luminocity}")
-lowest_luminocity = luminocity.min()
-print(f"The total events in the given input files are {NEvent_total} . But \
-to include maximum events from this data \
-\n(keeping effective luminocity same)\
-lowest luminocity is {lowest_luminocity} \
-* 10^(-6) fb^-1)/(0.8 or 0.2 depending on train or test)") # this is the number
-    #  \n HIGHEST number of total events should be {lowest_luminocity}") # this is the number
-                            # using which we can include maximum continuum event following their
-                            # (relative) cross section ratio - u:d:s:c = 1.61:0.4:0.38:1.3
-if lowest_luminocity <= NEvent_total:
-    New_NEvent_total = np.zeros(5)
-    for i in range(5):
-        New_NEvent_total[i] = lowest_luminocity
-else:
-    print("There is some problem during calculation of scaling factor")
-# print(f"New total event is {New_NEvent_total}")
-New_NEvent = New_NEvent_total * cross_section
+New_NEvent = bbbar_Event * cross_section_ratio_in_percentage
 
 scale = NEvent/New_NEvent                                       # Setting Scale
 print(f"Previous total events in u,d,s,c,b(bar) folder were {NEvent}")
 print(f"New total event according to cross section should be {New_NEvent}")
 print(f"So scaling factor is {scale}")
 
-for i in range(5):
+for i in range(4):
     # Loading input root file and creating new root file
     inFile = ROOT.TFile.Open(f"{input_filename[i]}")
     inTree = inFile.Get('tree')
@@ -79,7 +66,7 @@ for i in range(5):
     with scale factor {scale[i]}")
 
     # Scaling the file
-    k = 0       # To count and print the number of selected events per file
+    Number_of_selected_events = 0       # To count and print the number of selected events per file
     for iEvent in range(inTree.GetEntries()):
         rand = ROOT.gRandom.Rndm()
         num = 1/scale[i]
@@ -87,9 +74,8 @@ for i in range(5):
             continue     
         inTree.GetEntry(iEvent)
         outTree.Fill()
-        k += 1
+        Number_of_selected_events += 1
 
-    print(f"Afer scaling {k} events has been stored in {output_filename[i]} with luminocity \
-    ({lowest_luminocity} * 10^(-6) fb^-1)/(0.8 or 0.2 depending on train or test)")
+    print(f"Afer scaling {Number_of_selected_events} events has been stored in {output_filename[i]}")
     outTree.AutoSave()
     outFile.Close()
