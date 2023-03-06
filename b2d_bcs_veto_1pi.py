@@ -35,11 +35,10 @@ ma.inputMdstList(environmentType="default",filelist=f"{file_name}",path=main)
 
 # fill final state particle lists
 ma.fillParticleList("pi+:myPions2", "abs(d0)<0.2 and abs(z0)<1 and cosTheta >= -0.6", path=main)
-ma.fillParticleList("pi+:myPions1", "abs(d0)<0.2 and abs(z0)<1", path=main)
 ma.fillParticleList("K+", "abs(d0)<0.2 and abs(z0)<1 and cosTheta >= -0.6", path=main)
 
 #D0 reconstruction
-ma.reconstructDecay("anti-D0 -> K+ pi-:myPions1",cut="1.85 < M < 1.88",path=main)
+ma.reconstructDecay("anti-D0 -> K+ pi-:myPions2",cut="1.85 < InvM < 1.88",path=main)
 ma.variablesToExtraInfo("anti-D0", variables={'M': 'M_before_fit'}, path=main)
 vx.kFit("anti-D0", conf_level=0.0, fit_type='massvertex', path=main)
 ma.matchMCTruth("anti-D0", path=main)
@@ -63,13 +62,13 @@ ma.buildContinuumSuppression(list_name="B+", roe_mask="cleanMask", path=main)
 # vm.addAlias("goodBWDGamma", "passesCut(clusterReg == 3 and clusterE > 0.1)")
 # vm.addAlias("goodGamma", "passesCut(goodFWDGamma or goodBRLGamma or goodBWDGamma)")
 # ma.fillParticleList(decayString="gamma:roe", cut="isInRestOfEvent == 1 and goodGamma", path=roe_path)
-# # stdPi0s.stdPi0s(path=roe_path)
+# # stdPi0s.stdPi0s(path=roe_path)  # ???????????cut="isInRestOfEvent == 1 ???????????
 # ma.fillSignalSideParticleList(outputListName='anti-D0:sig', decayString='B+ -> ^anti-D0 pi+ pi- pi+',path=roe_path)     
 
 # ma.reconstructDecay(decayString='D0*:veto ->  anti-D0:sig gamma:roe', cut='',path=roe_path)          
 # # ma.reconstructDecay(decayString='D0*:veto ->  anti-D0:sig pi0:eff60_May2020Fit', cut='',path=roe_path)          
-# rankByLowest(particleList='D0*:veto', variable='massDifference(0)',numBest=1, path=roe_path)  #############COMPLIMENT
-# variableToSignalSideExtraInfo(particleList='D0*:veto', varToExtraInfo={'massDifference(0)': 'veto'}, path=roe_path)
+# ma.rankByLowest(particleList='D0*:veto', variable='massDifference(0)',numBest=1, path=roe_path)  #############COMPLIMENT
+# ma.variableToSignalSideExtraInfo(particleList='D0*:veto', varToExtraInfo={'massDifference(0)': 'veto'}, path=roe_path)
 # # execute roe_path for each RestOfEvent in the event                  
 # main.for_each('RestOfEvent', 'RestOfEvents', roe_path)
 # vm.addAlias('dm', 'extraInfo(veto)')
@@ -88,6 +87,37 @@ ma.rankByLowest(particleList='B+', variable='BCS3', outputVariable='BCS3_rank', 
 vm.addAlias('BCS3_rank', 'extraInfo(BCS3_rank)')
 # ma.applyCuts('B+','BCS3_rank==1',path=main)
 ############################### Best candidate selection Stop#########################
+
+##############################calculation of invariant mass##########################
+vm.addAlias('InvMD0and1stpi', 'daughterInvM(0, 1)')
+vm.addAlias('InvMD0and2ndpi', 'daughterInvM(0, 2)')
+vm.addAlias('InvMD0and3rdpi', 'daughterInvM(0, 3)')
+vm.addAlias('InvM1stand2ndpi', 'daughterInvM(1, 2)')
+vm.addAlias('InvM1stand3rdpi', 'daughterInvM(1, 3)')
+vm.addAlias('InvM2ndand3rdpi', 'daughterInvM(2, 3)')
+vm.addAlias('InvM1st2nd3rdpi', 'daughterInvM(1, 2, 3)')
+vm.addAlias('InvMD0and1st2ndpi', 'daughterInvM(0, 1, 2)')
+vm.addAlias('InvMD0and2nd3rdpi', 'daughterInvM(0, 2, 3)')
+vm.addAlias('InvMD0and1st3rdpi', 'daughterInvM(0, 1, 3)')
+
+invM_var = ['InvMD0and1stpi', 'InvMD0and2ndpi', 'InvMD0and3rdpi', 'InvM1stand2ndpi', 'InvM1stand3rdpi',
+    'InvM2ndand3rdpi', 'InvM1st2nd3rdpi', 'InvMD0and1st2ndpi', 'InvMD0and2nd3rdpi', 'InvMD0and1st3rdpi']
+##############################calculation of invariant mass##########################
+
+############################## Calculation of angle between daughteres#############
+vm.addAlias('AngelD0and1stpi', 'daughterAngle(0, 1)')
+vm.addAlias('AngelD0and2ndpi', 'daughterAngle(0, 2)')
+vm.addAlias('AngelD0and3rdpi', 'daughterAngle(0, 3)')
+vm.addAlias('Angel1stand2ndpi', 'daughterAngle(1, 2)')
+vm.addAlias('Angel1stand3rdpi', 'daughterAngle(1, 3)')
+vm.addAlias('Angel2ndand3rdpi', 'daughterAngle(2, 3)')
+
+vm.addAlias('AngelKpi', 'daughterAngle(0:0, 0:1)')
+
+Angel_var = ['AngelD0and1stpi', 'AngelD0and2ndpi', 'AngelD0and3rdpi', 'Angel1stand2ndpi', 'Angel1stand3rdpi',
+    'Angel2ndand3rdpi', 'AngelKpi']
+############################## Calculation of angle between daughteres#############
+
 
 # Create list of variables to save into the output file
 simpleCSVariables = [
@@ -164,6 +194,8 @@ vm.addAlias('fitNdf', 'extraInfo(ndf)')
 b_vars = []
 bcs_var = ['BCS3_rank']
 b_vars  += bcs_var
+b_vars  += invM_var
+b_vars  += Angel_var
 # standard_vars = vc.kinematics + vc.mc_kinematics + vc.mc_truth
 # b_vars += standard_vars
 # my_var = vc.inv_mass + vc.deltae_mbc

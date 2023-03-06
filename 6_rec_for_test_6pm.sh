@@ -8,7 +8,8 @@
 path=$(pwd)
 
 # path of steering file code
-steering_file="$path/b2d_test_bcs.py"                      
+steering_file="$path/b2d_test_bcs_signal_1pi.py"                      
+# steering_file="$path/b2d_test_bcs.py"                      
 # steering_file="$path/b2d_test_fbdt_output_with_other_variable.py"                      
 echo "Steering file is $steering_file"
 
@@ -23,10 +24,11 @@ let rec_start_ssbar=${4:-244}-1
 let rec_start_ccbar=${5:-925}-1
 # let rec_start_signal=${6:-6}-1
 let rec_start_signal=${6:-5}-1  # we will keep 5th file for test and {(1-4)&6} files are for train
+let rec_start_mixed=${7:-1}-1
 let rec_start=0
 
 # Strating reconstruction
-declare -a options=("charged" "uubar" "ddbar" "ssbar" "ccbar" "signal") #"mixed" 
+declare -a options=("signal" "charged" "uubar" "ddbar" "ssbar" "ccbar") # "mixed"
 
 for opt in "${options[@]}"
 do
@@ -108,6 +110,9 @@ do
     if [[ $opt == "charged" ]]
     then
         rec_start=$rec_start_charged
+    elif [[ $opt == "mixed" ]]
+    then
+        rec_start=$rec_start_mixed
     elif [[ $opt == "uubar" ]]
     then
         rec_start=$rec_start_uubar

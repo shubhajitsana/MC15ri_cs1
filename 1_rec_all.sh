@@ -6,11 +6,12 @@
 path=$(pwd)
 
 # path of steering file code
-steering_file="$path/b2d_bcs_veto.py"                      
+steering_file="$path/b2d_bcs_myveto_1pi.py"                      
+# steering_file="$path/b2d_bcs_veto.py"                      
 echo "Steering file is $steering_file"
 
 # Strating reconstruction
-declare -a options=("charged" "mixed" "uubar" "ddbar" "ssbar" "ccbar" "signal") 
+declare -a options=("signal" "charged" "mixed" "uubar" "ddbar" "ssbar" "ccbar")
 
 for opt in "${options[@]}"
 do

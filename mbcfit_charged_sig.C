@@ -41,14 +41,14 @@ using namespace RooFit ;
 using namespace std;
 //int main(){
 
-void mbcfit(){
+void mbcfit_charged_sig(){
   /*******************Fit Variables***********************************/
   RooRealVar mbc("mbc","M_{bc} (GeV)",5.23,5.29);
   /**defining DATAFRAME{unbinned histogram}(FROM FIT VARIABLE) TO FIT AND PLOT**/
   RooDataSet* data=new RooDataSet("data","data",RooArgSet(mbc));
   /*******************Input root file**********************************/
   TChain* chain=new TChain();
-  chain->Add("/home/belle2/ssana/MC15ri/cs_fom_data/combined/all.root/tree");
+  chain->Add("/home/belle2/ssana/MC15ri/cs_fom_data/combined/charged_signal.root/tree");
 
   Double_t  de3, md03, mbc3, r23, kid3,pid3,sig,cont_prob;
   Int_t run;
@@ -87,48 +87,19 @@ void mbcfit(){
   RooGaussian sig2("sig2","Gaussian-2",mbc,mean2,sigma2);
 
   RooRealVar fsig_1("frac_gaussians", "signal fraction", 0.5,0.,1.);
-  RooAddPdf twoGaussians("twoGaussians", "sum of two Gaussians ",RooArgList(sig1, sig2), RooArgList(fsig_1));
-
-  // --- Build Argus background PDF ---
-  RooRealVar argpar("argpar","argus shape parameter",-34.70,-100.,-1.) ;
-  RooArgusBG bkg("argus","Argus PDF",mbc,RooConst(5.29),argpar) ; //mbc background
-
-  //Initialization of parameter before adding two pdf
-  // cout<<"Total number of events which are used to fitting are : "<<counter<<endl;
-  Double_t event_count = counter; 
-  Double_t signal_count = counter*0.2;
-  Double_t back_count = counter*0.8;
-  RooRealVar n_sig("n_sig", "n_sig", signal_count, 0., event_count);//52000
-  RooRealVar n_bkg("n_bkg", "n_bkg", back_count, 0., event_count);//95000
-  RooAddPdf sum("sum","sum",RooArgList(twoGaussians,bkg),RooArgList(n_sig, n_bkg));//adding two pdf
+  RooAddPdf sum("twoGaussians", "sum of two Gaussians ",RooArgList(sig1, sig2), RooArgList(fsig_1));
   sum.fitTo(*data);
   /****************************FIT COMPLETE*************************************/
-  // // Integrate sig pdf(following some hypothesis) to get yield
-  // mbc.setRange("twoGaussians",5.27, 5.29);     //twoGaussians is my signal pdf    //5.27, 5.29 is the range we want to integrate
-  // RooAbsReal *integral_sig = twoGaussians.createIntegral(mbc,NormSet(mbc),Range("twoGaussians"));
-  
-  // double  Nsig = integral_sig->getVal();
-  // cout<<"Signal :"<<Nsig*n_sig.getVal()<<endl;   // nsig is the signal Yield
-  // double Nsigerr = n_sig.getError()*integral_sig->getVal();  
-  // cout<<"Signal error = "<<Nsigerr<<endl;
-  // cout<<"Signal Area "<< setprecision(4)<<Nsig<<endl;
-  /*********************Start Plotting and showing outpouts*****************/
   //Plotting fitted result
   RooPlot* deframe = mbc.frame(Title("Fitting M_{bc} of B^{#pm}"), Bins(300)) ;                          
   data->plotOn(deframe, Binning(300), DataError(RooAbsData::SumW2)) ;
-  // sum.plotOn(deframe, LineColor(kBlue)	, LineStyle(kSolid)) ;
-  // sum.paramOn(deframe,data,"", 2, Format("NEU"),AutoPrecision(1)), 0.7, 0.9, 0.9); //"NELU",  Prints the fitted parameter on the canvas
   sum.plotOn(deframe,Components(sig1),LineColor(kGreen),LineStyle(kDashed)) ;
   sum.plotOn(deframe,Components(sig2),LineColor(kBlack),LineStyle(kDashed)) ;
-  sum.plotOn(deframe,Components(twoGaussians),LineColor(kRed),LineStyle(kDashed));
-  sum.plotOn(deframe,Components(bkg),LineColor(kMagenta),LineStyle(kDashed)) ;
   sum.plotOn(deframe, LineColor(kBlue), LineStyle(kSolid)) ; // we need to write it last.
                         // otherwise pull distribution will calculate error wrt last mentioned pdf inside plotOn function
   sum.paramOn(deframe,data,"", 2, "NEU", 0.1, 0.35, 0.9); //"NELU",  Prints the fitted parameter on the canvas
 
   //Extract info. from fitting frame and showing
-  cout<<"chisq of the fit is : "<<deframe->chiSquare()<<endl;//chi-square of the fit
-  cout<<"chi-square/ndof : "<<deframe->chiSquare(7)<<endl;// Chi^2/(the number of degrees of freedom)
   RooHist* hpull = deframe->pullHist() ;
   RooPlot* frame3 = mbc.frame(Title("Pull Distribution")) ;
   hpull->SetFillColor(1);
@@ -149,24 +120,10 @@ void mbcfit(){
   entry = legend1->AddEntry("sig2","2nd Gaussian pdf","l");
   entry->SetLineColor(kBlack);
   entry->SetLineStyle(kDashed);
-  entry = legend1->AddEntry("twoGaussians","Combined signal pdf","l");
-  entry->SetLineColor(kRed);
-  entry->SetLineStyle(kDashed);
-  entry = legend1->AddEntry("bkg","bkg-ARGUS","l");
-  entry->SetLineColor(kMagenta);
-  entry->SetLineStyle(kDashed);
   entry = legend1->AddEntry("sum","Fitted pdf","l");
   entry->SetLineColor(kBlue);
   entry->SetLineStyle(kSolid);
   legend1->Draw();
-
-  // Printing error in "Signal yield calculation" // Problem is resolved using extra "E" inside paramOn function 
-  // std::string sig_err_in_str = std::to_string(n_sig.getError());
-  // TLatex* sig_err = new TLatex();
-  // sig_err->SetTextSize(0.034);
-  // sig_err->SetTextAlign(12);  //centered aligned
-  // sig_err->DrawLatex(5.2392, 1450, "#pm");
-  // sig_err->DrawLatex(5.24, 1450, sig_err_in_str); // here we need to give "TEXT" ONLY
 
   // // Adding arrow at (+-)3*sigma of signal pdf
   // double weightedMean = mean1.getVal()*fsig_1.getVal() + mean2.getVal()*(1.0-fsig_1.getVal());
@@ -207,10 +164,8 @@ void mbcfit(){
   frame3->GetXaxis()->CenterTitle(true);
   frame3->Draw("AXISSAME");
 
+  c1->Print("mbc_plot/mbc_fit_charged_sig.png");
   cout<<"Total number of events which are used to fitting are : "<<counter<<endl;
   cout<<"chisq of the fit is :"<<deframe->chiSquare()<<endl;//chi-square of the fit
   cout<<"chi-square/ndof :"<<deframe->chiSquare(7)<<endl;// Chi^2/(the number of degrees of freedom)
-  cout<<"Error in calculation of signal yield : "<<n_sig.getError()<<endl;
-  
-  c1->Print("mbc_plot/mbc_fit_all_cs_cut6.png");
 }

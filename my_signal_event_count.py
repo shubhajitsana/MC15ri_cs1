@@ -6,7 +6,7 @@ import sys
 
 
 print(f"Number of input files are {len(sys.argv)-1}")
-print(f"{sys.argv[0]}")
+print(f"Steering file name is : {sys.argv[0]}")
 whole_signal_event_number = 0 
 whole_total_event_in_charged = 0 
 for i in sys.argv[1:]:
@@ -17,7 +17,8 @@ for i in sys.argv[1:]:
     for iEvent in range(total_event_in_charged):
         input_tree.GetEntry(iEvent)
         signal = getattr(input_tree, 'isSignal')
-        if signal==1:
+        bcs_rank = getattr(input_tree, 'BCS3_rank')
+        if ((signal==1) and ((bcs_rank==1) or (bcs_rank==2) or (bcs_rank==3))):
             signal_event_number += 1
     print(f"There are {total_event_in_charged} reconstructed events in {i}")
     print(f"There are {signal_event_number} signal events in {i}")

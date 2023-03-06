@@ -96,39 +96,40 @@ ma.applyCuts('B+','BCS3_rank==1',path=main)
 
 # Create list of variables to save into the output file
 simpleCSVariables = [
-    "DeltaZ",  #must
-    "R2",  #must
-    "thrustBm",  #must
-    "thrustOm",  #must
-    "cosTBTO",  #must
-    "cosTBz",  #must
-    "KSFWVariables(et)",
-    "KSFWVariables(mm2)",
-    "KSFWVariables(hso00)",
-    "KSFWVariables(hso01)",
-    "KSFWVariables(hso02)",  #must
-    "KSFWVariables(hso03)",
-    "KSFWVariables(hso04)",
-    "KSFWVariables(hso10)",
-    "KSFWVariables(hso12)",  #must
-    "KSFWVariables(hso14)",
-    "KSFWVariables(hso20)",
-    "KSFWVariables(hso22)",
-    "KSFWVariables(hso24)",
-    "KSFWVariables(hoo0)",  #must
-    "KSFWVariables(hoo1)",
-    "KSFWVariables(hoo2)",
-    "KSFWVariables(hoo3)",
-    "KSFWVariables(hoo4)",
-    "CleoConeCS(1)",
-    "CleoConeCS(2)",
-    "CleoConeCS(3)",
-    "CleoConeCS(4)",
-    "CleoConeCS(5)",
-    "CleoConeCS(6)",
-    "CleoConeCS(7)",
-    "CleoConeCS(8)",
-    "CleoConeCS(9)",
+    "sphericity",
+    "DeltaZ",  #must    #significance
+    "R2",  #must    #significance
+    "thrustBm",  #must    #significance
+    "thrustOm",  #must    #significance
+    "cosTBTO",  #must    #significance
+    "cosTBz",  #must    #significance
+    "KSFWVariables(et)",    #significance
+    # "KSFWVariables(mm2)",
+    # "KSFWVariables(hso00)",
+    # "KSFWVariables(hso01)",
+    "KSFWVariables(hso02)",  #must    #significance
+    # "KSFWVariables(hso03)",
+    "KSFWVariables(hso04)",    #significance
+    "KSFWVariables(hso10)",    #significance
+    "KSFWVariables(hso12)",  #must    #significance
+    "KSFWVariables(hso14)",    #significance
+    "KSFWVariables(hso20)",    #significance
+    # "KSFWVariables(hso22)",
+    # "KSFWVariables(hso24)",
+    "KSFWVariables(hoo0)",  #must    #significance
+    # "KSFWVariables(hoo1)",
+    "KSFWVariables(hoo2)",    #significance
+    # "KSFWVariables(hoo3)",
+    "KSFWVariables(hoo4)",    #significance
+    # "CleoConeCS(1)",
+    # "CleoConeCS(2)",
+    # "CleoConeCS(3)",
+    # "CleoConeCS(4)",
+    # "CleoConeCS(5)",
+    # "CleoConeCS(6)",
+    # "CleoConeCS(7)",
+    # "CleoConeCS(8)",
+    # "CleoConeCS(9)",
 ]
 vm.addAlias("D0M_BF", "extraInfo(M_before_fit)")
 vm.addAlias("ContProb", "extraInfo(ContinuumProbability)")
@@ -149,7 +150,9 @@ b_vars += vu.create_aliases_for_selected(
 )
 
 # D_var = vc.inv_mass + vc.deltae_mbc + vc.mc_truth + vc.vertex + vc.mc_vertex + ['chiSqrd', 'fitNdf']
-D_var = ['M', 'D0M_BF', 'InvM', 'Mbc', 'deltaE', 'isSignal', 'chiProb', 'chiSqrd']
+D_var = ['M', 'D0M_BF', 'InvM', 'Mbc', 'deltaE', 'isSignal', 'dr', 'dz',
+        'mcDecayVertexX', 'mcDecayVertexY', 'mcDecayVertexZ', 'x', 'y', 'z',
+        'chiProb', 'chiSqrd', 'fitNdf']
 b_vars += vu.create_aliases_for_selected(
     D_var,
     "B+ -> [^anti-D0 -> K+ pi-] pi+ pi- pi+",

@@ -58,7 +58,6 @@ do
         echo "Number of input files in $input_path is $input_file_count"
     fi
 
-
     ###########################start combining##################
     echo "Please wait for combination of $nRootFile input file from $input_path folder....."
 

@@ -8,10 +8,10 @@ import ROOT
 ######################Fit Variables#################
 deltae = ROOT.RooRealVar("deltae","#DeltaE (GeV)", -0.1, 0.1)
 ####defining DATAFRAME{unbinned histogram}(FROM FIT VARIABLE) TO FIT AND PLOT
-data = ROOT.RooDataSet("data", "data", ROOT.RooArgSet(deltae))
+data = ROOT.RooDataSet("data", "data", ROOT.RooArgSet(deltae))  # PROBLEM
 
 # Loading input root file and creating new root file
-inFile = ROOT.TFile.Open("/home/sana/ssana/fitting/charged.root")
+inFile = ROOT.TFile.Open("/home/belle2/ssana/MC15ri/cs/test_5_16/signal_scaled/test.root")
 inTree = inFile.Get('tree')
 NEvent = inTree.GetEntries()
 
@@ -20,14 +20,16 @@ counter =0
 for iEvent in range(inTree.GetEntries()):
     inTree.GetEntry(iEvent)
     # signal = getattr(inTree, 'isSignal')
-    o_de = getattr(inTree, 'deltaE')
-    o_mbc = getattr(inTree, 'Mbc')
-    o_md0 = getattr(inTree, 'D0_bar_InvM')
+    de3 = getattr(inTree, 'deltaE')
+    mbc3 = getattr(inTree, 'Mbc')
+    md03 = getattr(inTree, 'D0_bar_InvM')
+    cont_prob = getattr(inTree, 'ContProb')
+    kid3 = getattr(inTree, 'Kp_PID_bin_kaon')
     # o_r2 = getattr(inTree, 'R2')
-    # o_kid = getattr(inTree, 'Kp_PID_bin_kaon')
     # o_ = getattr(inTree, '')
-    if((o_md0>1.84) and (o_md0<1.89) and (o_mbc>5.27) and (o_mbc < 5.29) and (o_de < 0.1) and (o_de > -0.1)): # and (o_kid > 0.6)(o_r2 < 0.3) and 
-        data.add({o_de})
+    deltae.setVal(de3)
+    if((md03>1.85) and (md03<1.88) and (mbc3>5.23) and (mbc3 < 5.29) and (de3 < 0.1) and (de3 > -0.1) and (kid3 > 0.6) and (cont_prob < 0.54)): #(o_r2 < 0.3) and 
+        data.add(ROOT.RooArgSet(deltae))   # PROBLEM
         counter += 1
 
 
@@ -44,17 +46,17 @@ for iEvent in range(inTree.GetEntries()):
 #--- Build Signal PDF ---
 mean1 = ROOT.RooRealVar("mean1","mean of Gaussian-1",-0.001,-0.02,0.02)
 mean2 = ROOT.RooRealVar("mean2","mean of Gaussian-2",0.002,-0.02,0.02)
-sigma1 = ROOT.RooRealVar("sigma1","sigma of Gaussian-1",0., 0., 0.05)
-sigma2 = ROOT.RooRealVar("sigma2","sigma of Gaussian-2",0.01191,0.00000001,0.05)
+sigma1 = ROOT.RooRealVar("sigma1","sigma of Gaussian-1",0., 0., 1)
+sigma2 = ROOT.RooRealVar("sigma2","sigma of Gaussian-2",0.01191,0.00000001,1)
 
 sig1 = ROOT.RooGaussian("sig1","Gaussian-1",deltae,mean1,sigma1)
 sig2 = ROOT.RooGaussian("sig2","Gaussian-2",deltae,mean2,sigma2)
 
 fsig_1 = ROOT.RooRealVar("fsig_1", "signal fraction", 0.4,0.,1.)
-twoGaussians = ROOT.RooAddPdf("twoGaussians", "sum of two Gaussians ", [sig1, sig2], [fsig_1])
+twoGaussians = ROOT.RooAddPdf("twoGaussians", "sum of two Gaussians ", sig1, sig2, fsig_1)
 # // --- Build Argus background PDF ---
 b1 = ROOT.RooRealVar("Chbyshv-prm", "Chbyshv-prm", -0.062, -10., 10.)
-bkg = ROOT.RooChebychev("bkg","Background",deltae, [b1]) 
+bkg = ROOT.RooChebychev("bkg","Background",deltae, b1) 
     
 # //Initialization of parameter before adding two pdf
 event_count = counter 
@@ -62,30 +64,31 @@ signal_count = counter*0.4
 back_count = counter*0.6
 n_sig = ROOT.RooRealVar("n_sig", "n_sig", signal_count, 0., event_count)#52000
 n_bkg = ROOT.RooRealVar("n_bkg", "n_bkg", back_count, 0., event_count)#95000
-sum = ROOT.RooAddPdf("sum","sum", [twoGaussians,bkg], [n_sig, n_bkg])#adding two pdf
+sum = ROOT.RooAddPdf("sum","sum", ROOT.RooArgList(twoGaussians,bkg), ROOT.RooArgList(n_sig, n_bkg))#adding two pdf
 
 sum.fitTo(data)#fitting
 
 #   /*********************Start Plotting and showing outpouts*****************/
 #   //Plotting fitted result
-deframe = deltae.frame(Title="Fitting #DeltaE", Bins=200) 
-data.plotOn(deframe, Binning=200, DataError="SumW2") 
-sum.plotOn(deframe, LineColor="kBlue")#, LineStyle(kSolid)) 
+# deframe = deltae.frame(Title="Fitting #DeltaE", Bins=200) 
+deframe = deltae.frame(ROOT.RooFit.Title("Fitting #DeltaE"), ROOT.RooFit.Bins(200)) 
+# data.plotOn(deframe, Binning=200, DataError="SumW2") 
+sum.plotOn(deframe)#, LineColor="kBlue")#, LineStyle(kSolid)) 
 #Fetching problem in paramOn
-sum.paramOn(deframe,data, FillColor="kRed",  Layout=(0.65, 0.9, 0.9),Format="NU", ShowConstants=True)#Prints the fitted parameter on the canvas
-sum.plotOn(deframe,Components="sig1",LineColor="kGreen",LineStyle="--") 
-sum.plotOn(deframe,Components="sig2",LineColor="kBlack",LineStyle="--") 
-sum.plotOn(deframe,Components="twoGaussians",LineColor="kRed",LineStyle="--")
-sum.plotOn(deframe,Components="bkg",LineColor="kMagenta",LineStyle="--") 
+# sum.paramOn(deframe,data, FillColor="kRed",  Layout=(0.65, 0.9, 0.9),Format="NU", ShowConstants=True)#Prints the fitted parameter on the canvas
+sum.plotOn(deframe,ROOT.RooFit.Components("sig1"))   #Components="sig1")#,LineColor="kGreen",LineStyle="--") 
+sum.plotOn(deframe,ROOT.RooFit.Components("sig2"))   #Components="sig2")#,LineColor="kBlack",LineStyle="--") 
+sum.plotOn(deframe,ROOT.RooFit.Components("twoGaussians"))   #Components="twoGaussians")#,LineColor="kRed",LineStyle="--")
+sum.plotOn(deframe,ROOT.RooFit.Components("bkg"))   #Components="bkg")#,LineColor="kMagenta",LineStyle="--") 
 
 
 # //Extract info. from fitting frame and showing
 # chisq = frame.chiSquare()#extract chi2 value
-print(f"chi2 of mbc fitting = {frame.chiSquare()}") #Printing chi2 value
-print(f"chi-square/ndof : {frame.chiSquare(7)}") #Printing chi2 value
+print(f"chi2 of mbc fitting = {deframe.chiSquare()}") #Printing chi2 value
+print(f"chi-square/ndof : {deframe.chiSquare(7)}") #Printing chi2 value
 hpull = deframe.pullHist() 
-frame3 = deltae.frame(Title="Pull Distribution") 
-hpull.SetFillColor(1)
+frame3 = deltae.frame(ROOT.RooFit.Title("Pull Distribution"))  #Title="Pull Distribution") 
+# hpull.SetFillColor(kBlack)
 frame3.addPlotable(hpull,"X0B") #"X0" is for errorbar; and "B" is for histograms
 
 
@@ -137,4 +140,4 @@ frame3.Draw()
 # frame3.GetXaxis().CenterTitle(true)
 # frame3.Draw("AXISSAME")
 
-c2.SaveAs("py_mbcfit.pdf")
+c2.SaveAs("de_plot/py_de_fit.pdf")

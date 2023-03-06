@@ -41,14 +41,14 @@ using namespace RooFit ;
 using namespace std;
 //int main(){
 
-void defit(){
+void defit_charged_sig(){
     /*******************Fit Variables***********************************/
     RooRealVar deltae("deltae","#DeltaE (GeV)", -0.1, 0.1);
     /**defining DATAFRAME{unbinned histogram}(FROM FIT VARIABLE) TO FIT AND PLOT**/
     RooDataSet* data=new RooDataSet("data","data",RooArgSet(deltae));
     /*******************Input root file**********************************/
     TChain* chain=new TChain();
-    chain->Add("/home/belle2/ssana/MC15ri/cs_fom_data/combined/all_without_sig.root/tree");
+  chain->Add("/home/belle2/ssana/MC15ri/cs_fom_data/combined/charged_signal.root/tree");
 
     Double_t  de3, md03, mbc3, r23, kid3,pid3,sig,cont_prob;
     Int_t run;
@@ -87,45 +87,23 @@ void defit(){
     RooGaussian sig2("sig2","Gaussian-2",deltae,mean2,sigma2);
 
     RooRealVar fsig_1("frac_gaussians", "signal fraction", 0.5,0.,1.);
-    RooAddPdf twoGaussians("twoGaussians", "sum of two Gaussians ",RooArgList(sig1, sig2), RooArgList(fsig_1));
-
-    // --- Build Argus background PDF ---
-    RooRealVar b1("Chbyshv-prm", "Chbyshv-prm", -0.062, -10., 10.);
-    RooChebychev bkg("bkg","Background",deltae,RooArgSet(b1)) ;
-
-    //Initialization of parameter before adding two pdf
-    // cout<<"Total number of events which are used to fitting are : "<<counter<<endl;
-    Double_t event_count = counter; 
-    Double_t signal_count = counter*0.2;
-    Double_t back_count = counter*0.8;
-    RooRealVar n_sig("n_sig", "n_sig", signal_count, 0., event_count);//52000
-    RooRealVar n_bkg("n_bkg", "n_bkg", back_count, 0., event_count);//95000
-    RooAddPdf sum("sum","sum",RooArgList(twoGaussians,bkg),RooArgList(n_sig, n_bkg));//adding two pdf
+    RooAddPdf sum("twoGaussians", "sum of two Gaussians ",RooArgList(sig1, sig2), RooArgList(fsig_1));
     sum.fitTo(*data);
     /****************************FIT COMPLETE*************************************/
-
-    /*********************Start Plotting and showing outpouts*****************/
     //Plotting fitted result
     RooPlot* deframe = deltae.frame(Title("Fitting #DeltaE of B^{#pm}"), Bins(300)) ;                          
     data->plotOn(deframe, Binning(300), DataError(RooAbsData::SumW2)) ;
-    // sum.plotOn(deframe, LineColor(kBlue)	, LineStyle(kSolid)) ;
-    // sum.paramOn(deframe,data,"", 2, Format("NEU"),AutoPrecision(1)), 0.7, 0.9, 0.9); //"NELU",  Prints the fitted parameter on the canvas
     sum.plotOn(deframe,Components(sig1),LineColor(kGreen),LineStyle(kDashed)) ;
     sum.plotOn(deframe,Components(sig2),LineColor(kBlack),LineStyle(kDashed)) ;
-    sum.plotOn(deframe,Components(twoGaussians),LineColor(kRed),LineStyle(kDashed));
-    sum.plotOn(deframe,Components(bkg),LineColor(kMagenta),LineStyle(kDashed)) ;
     sum.plotOn(deframe, LineColor(kBlue), LineStyle(kSolid)) ; // we need to write it last.
                         // otherwise pull distribution will calculate error wrt last mentioned pdf inside plotOn function
     sum.paramOn(deframe,data,"", 2, "NEU", 0.63, 0.9, 0.9); //"NELU",  Prints the fitted parameter on the canvas
 
     //Extract info. from fitting frame and showing
-    cout<<"chisq of the fit is : "<<deframe->chiSquare()<<endl;//chi-square of the fit
-    cout<<"chi-square/ndof : "<<deframe->chiSquare(7)<<endl;// Chi^2/(the number of degrees of freedom)
     RooHist* hpull = deframe->pullHist() ;
     RooPlot* frame3 = deltae.frame(Title("Pull Distribution")) ;
     hpull->SetFillColor(1);
     frame3->addPlotable(hpull,"X0B"); // "X0" is for errorbar; and "B" is for histograms
-    // frame3->addPlotable(hpull,"P");
 
 
     TCanvas* c1 = new TCanvas("c1", "c1", 2550, 1500) ;
@@ -141,24 +119,10 @@ void defit(){
     entry = legend1->AddEntry("sig2","2nd Gaussian pdf","l");
     entry->SetLineColor(kBlack);
     entry->SetLineStyle(kDashed);
-    entry = legend1->AddEntry("twoGaussians","Combined signal pdf","l");
-    entry->SetLineColor(kRed);
-    entry->SetLineStyle(kDashed);
-    entry = legend1->AddEntry("bkg","bkg-Chebyshev","l");
-    entry->SetLineColor(kMagenta);
-    entry->SetLineStyle(kDashed);
     entry = legend1->AddEntry("sum","Fitted pdf","l");
     entry->SetLineColor(kBlue);
     entry->SetLineStyle(kSolid);
     legend1->Draw();
-
-    // Printing error in "Signal yield calculation" // Problem is resolved using extra "E" inside paramOn function 
-    // std::string sig_err_in_str = std::to_string(n_sig.getError());
-    // TLatex* sig_err = new TLatex();
-    // sig_err->SetTextSize(0.034);
-    // sig_err->SetTextAlign(12);  //centered aligned
-    // sig_err->DrawLatex(0.0835, 1025, "#pm");
-    // sig_err->DrawLatex(0.085, 1100, sig_err_in_str); // here we need to give "TEXT" ONLY
 
     // // Adding arrow at (+-)3*sigma of signal pdf
     // double weightedMean = mean1.getVal()*fsig_1.getVal() + mean2.getVal()*(1.0-fsig_1.getVal());
@@ -199,10 +163,8 @@ void defit(){
     frame3->GetXaxis()->CenterTitle(true);
     frame3->Draw("AXISSAME");
 
+    c1->Print("de_plot/de_fit_charged_sig.png");
     cout<<"Total number of events which are used to fitting are : "<<counter<<endl;
     cout<<"chisq of the fit is :"<<deframe->chiSquare()<<endl;//chi-square of the fit
     cout<<"chi-square/ndof :"<<deframe->chiSquare(7)<<endl;// Chi^2/(the number of degrees of freedom)
-    cout<<"Error in calculation of signal yield : "<<n_sig.getError()<<endl;
-
-    c1->Print("de_plot/de_fit_all_cs_cut6.png");
 }

@@ -4,7 +4,8 @@
 path=$(pwd)
 
 # path of steering file code
-steering_file="$path/my_train.py"                      
+steering_file="$path/my_train_signal.py"                      
+# steering_file="$path/my_train.py"                      
 echo "Steering file is $steering_file"
 
 # Output-Input Directory to save combined root files
