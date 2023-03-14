@@ -11,7 +11,7 @@ deltae = ROOT.RooRealVar("deltae","#DeltaE (GeV)", -0.1, 0.1)
 data = ROOT.RooDataSet("data", "data", ROOT.RooArgSet(deltae))  # PROBLEM
 
 # Loading input root file and creating new root file
-inFile = ROOT.TFile.Open("/home/belle2/ssana/MC15ri/cs/test_5_16/signal_scaled/test.root")
+inFile = ROOT.TFile.Open("/home/belle2/ssana/MC15ri/cs/test_3_15/signal_scaled/test.root")
 inTree = inFile.Get('tree')
 NEvent = inTree.GetEntries()
 
@@ -23,12 +23,12 @@ for iEvent in range(inTree.GetEntries()):
     de3 = getattr(inTree, 'deltaE')
     mbc3 = getattr(inTree, 'Mbc')
     md03 = getattr(inTree, 'D0_bar_InvM')
-    cont_prob = getattr(inTree, 'ContProb')
+    signal_probability = getattr(inTree, 'SigProb')
     kid3 = getattr(inTree, 'Kp_PID_bin_kaon')
     # o_r2 = getattr(inTree, 'R2')
     # o_ = getattr(inTree, '')
     deltae.setVal(de3)
-    if((md03>1.85) and (md03<1.88) and (mbc3>5.23) and (mbc3 < 5.29) and (de3 < 0.1) and (de3 > -0.1) and (kid3 > 0.6) and (cont_prob < 0.54)): #(o_r2 < 0.3) and 
+    if((md03>1.85) and (md03<1.88) and (mbc3>5.23) and (mbc3 < 5.29) and (de3 < 0.1) and (de3 > -0.1) and (kid3 > 0.6) and (signal_probability < 0.54)): #(o_r2 < 0.3) and 
         data.add(ROOT.RooArgSet(deltae))   # PROBLEM
         counter += 1
 
@@ -73,13 +73,13 @@ sum.fitTo(data)#fitting
 # deframe = deltae.frame(Title="Fitting #DeltaE", Bins=200) 
 deframe = deltae.frame(ROOT.RooFit.Title("Fitting #DeltaE"), ROOT.RooFit.Bins(200)) 
 # data.plotOn(deframe, Binning=200, DataError="SumW2") 
-sum.plotOn(deframe)#, LineColor="kBlue")#, LineStyle(kSolid)) 
 #Fetching problem in paramOn
 # sum.paramOn(deframe,data, FillColor="kRed",  Layout=(0.65, 0.9, 0.9),Format="NU", ShowConstants=True)#Prints the fitted parameter on the canvas
-sum.plotOn(deframe,ROOT.RooFit.Components("sig1"))   #Components="sig1")#,LineColor="kGreen",LineStyle="--") 
-sum.plotOn(deframe,ROOT.RooFit.Components("sig2"))   #Components="sig2")#,LineColor="kBlack",LineStyle="--") 
-sum.plotOn(deframe,ROOT.RooFit.Components("twoGaussians"))   #Components="twoGaussians")#,LineColor="kRed",LineStyle="--")
-sum.plotOn(deframe,ROOT.RooFit.Components("bkg"))   #Components="bkg")#,LineColor="kMagenta",LineStyle="--") 
+sum.plotOn(deframe,Components="sig1")#ROOT.RooFit.Components("sig1"))   #,LineColor="kGreen",LineStyle="--") 
+sum.plotOn(deframe,Components="sig2")#ROOT.RooFit.Components("sig2"))   #,LineColor="kBlack",LineStyle="--") 
+sum.plotOn(deframe,Components="twoGaussians")#ROOT.RooFit.Components("twoGaussians"))   #,LineColor="kRed",LineStyle="--")
+sum.plotOn(deframe,Components="bkg")#ROOT.RooFit.Components("bkg"))   #,LineColor="kMagenta",LineStyle="--") 
+sum.plotOn(deframe)#, LineColor="kBlue")#, LineStyle(kSolid)) 
 
 
 # //Extract info. from fitting frame and showing

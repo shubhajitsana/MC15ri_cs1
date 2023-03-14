@@ -241,7 +241,7 @@ void mbc_de_mD_dz(){
     legend2->AddEntry(deu,"Only for uubar","l");
     legend2->AddEntry(ded,"Only for ddbar","l");
     legend2->AddEntry(des,"Only for ssbar","l");
-    legend2->AddEntry(dec,"Only for ccbar","l");
+    legend2->AddEntry(dec,"For all data","l");
     legend2->Draw();
 
     pad2->Update();

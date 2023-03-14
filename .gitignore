@@ -2,3 +2,5 @@ root_plot/
 data/
 cs/
 *.root
+*.png
+*.pdf
