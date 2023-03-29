@@ -12,28 +12,42 @@ general_options.m_datafiles = basf2_mva.vector(f"{input_file}")
 general_options.m_treename = "tree"
 general_options.m_identifier = f"{output_weightfile}"  # outputted weightfile
 general_options.m_variables = basf2_mva.vector(
+    # "ethoo0",
+    # "hso00mm2",
+    "ethoo0hso00mm2",
+    # "hoo3hoo1",   #nan
+    # "hso01hso03", #nan
+    # "ethoo0TBz",
+    # "R2thrustBm",
+    # "TBTOhso12",
+    "thrustOmhoo2",
+    "R2thrustBmTBTOhso12",
+    # "R2thrustBmthrustOmhoo2",
+    # "TBTOhso12thrustOmhoo2",
+    # "R2thrustBmTBTOhso12thrustOmhoo2",
     "abs_qr",       # calculated using ft.flavorTagger fn
     # "sphericity",   # calculated using ma.buildEventShape fn
     "DeltaZ",       # calculated using vx.TagV fn
-    "R2",           # rest of the variables are calculated using ma.buildContinuumSuppression fn
-    "thrustBm",  #must    #significance
-    "thrustOm",  #must    #significance
-    "cosTBTO",  #must    #significance
+    # "R2",           # rest of the variables are calculated using ma.buildContinuumSuppression fn
+    # "thrustBm",  #must    #significance
+    # "thrustOm",  #must    #significance
+    # "cosTBTO",  #must    #significance
     "cosTBz",  #must    #significance
+    "CMS_cosTheta",  #must    #significance
     # "KSFWVariables(et)",    #significance
     # "KSFWVariables(mm2)",
     # "KSFWVariables(hso00)",
     # "KSFWVariables(hso01)",
-    "KSFWVariables(hso02)",  #must    #significance
+    # "KSFWVariables(hso02)",  #must    #significance     #############nearly_same##########
     # "KSFWVariables(hso03)",
     # "KSFWVariables(hso04)",    #significance
-    "KSFWVariables(hso10)",    #significance
-    "KSFWVariables(hso12)",  #must    #significance
-    # "KSFWVariables(hso14)",    #significance
+    # "KSFWVariables(hso10)",    #significance
+    # "KSFWVariables(hso12)",  #must    #significance     #############nearly_same##########
+    "KSFWVariables(hso14)",    #significance
     # "KSFWVariables(hso20)",    #significance
     # "KSFWVariables(hso22)",
-    # "KSFWVariables(hso24)",
-    "KSFWVariables(hoo0)",  #must    #significance
+    "KSFWVariables(hso24)",
+    # "KSFWVariables(hoo0)",  #must    #significance
     # "KSFWVariables(hoo1)",
     # "KSFWVariables(hoo2)",    #significance
     # "KSFWVariables(hoo3)",
@@ -41,7 +55,7 @@ general_options.m_variables = basf2_mva.vector(
     # "CleoConeCS(1)",
     # "CleoConeCS(2)",
     # "CleoConeCS(3)",
-    # "CleoConeCS(4)",
+    "CleoConeCS(4)",
     # "CleoConeCS(5)",
     # "CleoConeCS(6)",
     # "CleoConeCS(7)",

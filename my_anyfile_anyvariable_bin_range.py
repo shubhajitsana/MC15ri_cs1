@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-# takes commadnd as "pyroot my_anyfile_anyvariable_bin_range.py file_path variable_name bin_number lower_range upper_range x_title"
+# takes commadnd as "pyroot my_anyfile_anyvariable_bin_range.py file_path variable_name bin_number lower_range upper_range x_title output_filename"
 
 import ROOT
 import sys
@@ -20,11 +20,11 @@ input_from_6th_string = sys.argv[6].split("/")
 histogram_title = ' '.join(input_from_6th_string)
 
 # Different output filename option for different files in one folder but ploting same variable
-input_filename_string = input_filename.split("data/combined/")    # ONLY need to change here depending on the pathname you are giving
-input_filename_last_string = input_filename_string[1]
-output_filename_option = input_filename_last_string.split(".root")
-output_filename = output_filename_option[0] + "_" + variable_name
-# output_filename = variable_name
+# input_filename_string = input_filename.split("data/combined/")    # ONLY need to change here depending on the pathname you are giving
+# input_filename_last_string = input_filename_string[1]
+# output_filename_option = input_filename_last_string.split(".root")
+# output_filename = output_filename_option[0] + "_" + variable_name
+output_filename = sys.argv[7]
 
 
 

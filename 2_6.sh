@@ -15,5 +15,5 @@ sh 3_bcs_deltaz_filter.sh
 sh 3_bcs_a_signal_only.sh
 sh 3_bcs_b_scale.sh
 sh 4_combine_for_final_train_lumino.sh
-sh 5_train.sh
-sh 6_rec_for_test_6pm.sh
+# sh 5_train.sh
+# sh 6_rec_for_test_6pm.sh

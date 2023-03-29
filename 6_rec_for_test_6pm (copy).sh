@@ -1,24 +1,56 @@
 #!/bin/bash
+# takes command as: ./6_rec_for_test.sh 481 801 256 244 801
 # this file reconstruct from all the folder
-# To run this we need steering file named "b2d.py" in same directory
+# To run this we need steering file named "b2d_test.py" in same directory
 # WHEN WE PUT "*" IN "ls" COMMAND, IT RETURNS FULL PATHNAME ALSO.
+# But we need "for" loop to start reconstructing from perticular number
 
 path=$(pwd)
 
 # path of steering file code
-steering_file="$path/b2d_bcs_myveto_1pi.py"                      
-# steering_file="$path/b2d_bcs_veto.py"                      
+steering_file="$path/b2d_test_bcs_signal_1pi.py"                      
+# steering_file="$path/b2d_test_bcs.py"                      
+# steering_file="$path/b2d_test_fbdt_output_with_other_variable.py"                      
 echo "Steering file is $steering_file"
 
+# path of  weight file
+weightfile="$path/cs/test/MVAFastBDT.root"
+echo "Path of weightfile is $weightfile"
+
+# 55.4:44.6
+let rec_start_charged=${1:-1}-1        #as for loop starts from next numbering
+let rec_start_uubar=${2:-1}-1
+let rec_start_ddbar=${3:-1}-1
+let rec_start_ssbar=${4:-1}-1
+let rec_start_ccbar=${5:-1}-1
+let rec_start_signal=${6:-1}-1
+# 73.9:26.1
+# let rec_start_charged=${1:-444}-1        #as for loop starts from next numbering
+# let rec_start_uubar=${2:-942}-1
+# let rec_start_ddbar=${3:-236}-1
+# let rec_start_ssbar=${4:-225}-1
+# let rec_start_ccbar=${5:-855}-1
+# let rec_start_signal=${6:-5}-1
+# 80:20
+# let rec_start_charged=${1:-481}-1        #as for loop starts from next numbering
+# let rec_start_uubar=${2:-1020}-1
+# let rec_start_ddbar=${3:-256}-1
+# let rec_start_ssbar=${4:-244}-1
+# let rec_start_ccbar=${5:-925}-1
+# # let rec_start_signal=${6:-6}-1
+# let rec_start_signal=${6:-5}-1  # we will keep 5th file for test and {(1-4)&6} files are for train
+let rec_start_mixed=${7:-1}-1
+let rec_start=0
+
 # Strating reconstruction
-declare -a options=("signal" "charged" "uubar" "ddbar" "ssbar" "ccbar") #  "mixed"
+declare -a options=("signal" "charged" "uubar" "ddbar" "ssbar" "ccbar") # "mixed"
 
 for opt in "${options[@]}"
 do
     # path of output files
     if [[ $opt == "uubar" || $opt == "ccbar" ]] # making separet directory for files more than 1k
     then
-        output_folder_name_1_to_1000="$path/data/$opt/sub00"        
+        output_folder_name_1_to_1000="$path/cs/test/$opt/sub00"        
         if [ -d "$output_folder_name_1_to_1000" ]
         then
             echo "$output_folder_name_1_to_1000 already exists."
@@ -26,7 +58,7 @@ do
             $(mkdir -p ${output_folder_name_1_to_1000})
             echo "$output_folder_name_1_to_1000 has been created"
         fi
-        output_folder_name_1001_2000="$path/data/$opt/sub01"        
+        output_folder_name_1001_2000="$path/cs/test/$opt/sub01"        
         if [ -d "$output_folder_name_1001_2000" ]
         then
             echo "$output_folder_name_1001_2000 already exists."
@@ -36,7 +68,7 @@ do
         fi
         echo "Name of the folder of output file are $output_folder_name_1_to_1000 and $output_folder_name_1001_2000"
     else
-        output_folder_name="$path/data/$opt"        
+        output_folder_name="$path/cs/test/$opt"        
         if [ -d "$output_folder_name" ]
         then
             echo "$output_folder_name already exists."
@@ -74,6 +106,7 @@ do
         input_file_count_2=$(ls ${input_folder_name_2}/*.root | wc -l)
         input_file_count=$(($input_file_count_1 + $input_file_count_2))
         echo "Number of input file in $input_folder_name_1 and $input_folder_name_2 is $input_file_count"
+
     else
         input_datapath='/group/belle2/dataprod/MC/MC15ri'
         input_folder_name="$input_datapath/$opt/sub00"
@@ -109,8 +142,33 @@ do
         echo "Because Input file count is $input_file_count but array dimension is $length_input_file_array"
     fi
 
+    # Finalizing the starting number of array for reconstruction
+    if [[ $opt == "charged" ]]
+    then
+        rec_start=$rec_start_charged
+    elif [[ $opt == "mixed" ]]
+    then
+        rec_start=$rec_start_mixed
+    elif [[ $opt == "uubar" ]]
+    then
+        rec_start=$rec_start_uubar
+    elif [[ $opt == "ddbar" ]]
+    then
+        rec_start=$rec_start_ddbar
+    elif [[ $opt == "ssbar" ]]
+    then
+        rec_start=$rec_start_ssbar
+    elif [[ $opt == "ccbar" ]]
+    then
+        rec_start=$rec_start_ccbar
+    elif [[ $opt == "signal" ]]
+    then
+        rec_start=$rec_start_signal
+    fi
+
     # Submiting Jobs
-    for((i=0; i<$length_input_file_array; i++))
+    let i=0
+    for((i=$rec_start; i<$length_input_file_array; i++))
     do
         if [[ $opt == "uubar" || $opt == "ccbar" ]] # saving files (after 1k) in separet directory for uubar and ccbar
         then
