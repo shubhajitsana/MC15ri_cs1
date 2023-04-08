@@ -9,14 +9,16 @@ import numpy as np
 # 1st 6 are for input and next 6 are for output
 input_filename = []
 output_filename = []
-for i in range(1, 7):
+# for i in range(1, 7):
+for i in range(1, 6):
     input_filename.append(sys.argv[i])
-print(f"6 Input files are {input_filename}")
-for j in range(7,13):
+print(f"5 Input files are {input_filename}")
+# for j in range(7,13):
+for j in range(6,11):
     output_filename.append(sys.argv[j])
-print(f"6 Output files are {output_filename}")
+print(f"5 Output files are {output_filename}")
 
-for i in range(6):
+for i in range(5):
     # Loading input root file and creating new root file
     inFile = ROOT.TFile.Open(f"{input_filename[i]}")
     inTree = inFile.Get('tree')
@@ -29,7 +31,11 @@ for i in range(6):
     deltaZ_is_not_NAN_veto_passed_event_number = 0
     for iEvent in range(inTree.GetEntries()):   
         inTree.GetEntry(iEvent)
+        deltae = getattr(inTree, 'deltaE')
+        mbc = getattr(inTree, 'Mbc')
+        md0 = getattr(inTree, 'D0_bar_InvM')
         deltaz = getattr(inTree, 'DeltaZ')
+        kid = getattr(inTree, 'Kp_PID_bin_kaon')
         D_s_InvM = getattr(inTree, 'D_s_InvM')
         D_10D_md = getattr(inTree, 'D_10D_md')
         InvM1stand2ndpi = getattr(inTree, 'InvM1stand2ndpi')
@@ -40,6 +46,10 @@ for i in range(6):
         DstrminusroeD_md = getattr(inTree, 'DstrminusroeD_md')
         if not np.isnan(deltaz):
             if (
+                (deltae > -0.1 and deltae < 0.1) and 
+                (mbc > 5.27 and mbc < 5.29) and 
+                (md0 > 1.8536 and md0 < 1.8748) and 
+                (kid > 0.6) and 
                 (D_s_InvM < 1.958 or D_s_InvM > 1.978) and 
                 (D_10D_md < 0.496 or D_10D_md > 0.628) and 
                 (InvM1stand2ndpi < 0.489 or InvM1stand2ndpi > 0.506) and 

@@ -18,7 +18,7 @@ fi
 let nRootFile=300
 
 #combining for different folder
-declare -a options=("charged" "uubar" "ddbar" "ssbar" "ccbar" "signal") #"mixed" 
+declare -a options=("signal" "uubar" "ddbar" "ssbar" "ccbar") #"mixed" "charged" 
 
 for opt in "${options[@]}"
 do

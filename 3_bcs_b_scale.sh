@@ -5,7 +5,8 @@ path=$(pwd)
 
 # path of steering file code
 # pyrt_file="$path/my_scale_bcs_lumino.py"    # To take data according to overall cross section
-pyrt_file="$path/my_scale_bcs_lumino_50_50.py"    # To take data like 50% as signal and 50% as continnum event
+# pyrt_file="$path/my_scale_bcs_lumino_50_50.py"    # To take data like 50% as signal and 50% as continnum event
+pyrt_file="$path/my_scale_bcs_lumino_50_50_after_all_cut.py"    # To take data like 50% as signal and 50% as continnum event
 echo "Steering file is $pyrt_file"
 
 # Input Directory
@@ -23,7 +24,7 @@ else
 fi
 
 # Preparing string for piping in pyroot code
-declare -a options=("uubar" "ddbar" "ssbar" "ccbar" "bbbar")
+declare -a options=("bbbar" "uubar" "ddbar" "ssbar" "ccbar")
 in5out5=""
 for opt in "${options[@]}"
 do
@@ -39,6 +40,6 @@ done
 echo "$(basf2 $pyrt_file $in5out5)"          #For BELLE II server
 
 # To take data like 50% as signal and 50% as continnum event
-in_bbbar="$input_path/train_deltaz_filtered_bbbar.root"
-out_bbbar="$output_path/train_deltaz_filtered_bbbar.root"
-echo "$(cp ${in_bbbar} ${out_bbbar})"
+# in_bbbar="$input_path/train_deltaz_filtered_bbbar.root"
+# out_bbbar="$output_path/train_deltaz_filtered_bbbar.root"
+# echo "$(cp ${in_bbbar} ${out_bbbar})"

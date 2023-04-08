@@ -55,7 +55,7 @@ vx.kFit("anti-D0", conf_level=0.0, fit_type='massvertex', path=main)
 ma.matchMCTruth("anti-D0", path=main)
 
 #B reconstruction
-ma.reconstructDecay("B+ -> anti-D0 pi+:myPions2 pi-:myPions2 pi+:myPions2",cut="5.2 < Mbc < 5.3 and abs(deltaE) < 0.3",path=main)
+ma.reconstructDecay("B+ -> anti-D0 pi+:myPions2 pi-:myPions2 pi+:myPions2",cut="5.22 < Mbc < 5.3 and abs(deltaE) < 0.17",path=main)
 ma.matchMCTruth("B+", path=main)
 
 ma.buildRestOfEvent(target_list_name="B+", path=main)
@@ -267,7 +267,7 @@ vx.TagV("B+", 'breco', path=main)
 ft.flavorTagger(particleLists=["B+"],weightFiles='B2nunubarBGx1',combinerMethods=['TMVA-FBDT'], path=main)
 vm.addAlias("abs_qr","abs(qrOutput(FBDT))")
 
-ma.buildEventShape(inputListNames=["B+"], path=main)
+# ma.buildEventShape(inputListNames=["B+"], path=main) # as we are not using sphericity
 
 main.add_module("MVAExpert", listNames=["B+"], extraInfoName="SignalProbability", identifier=f"{weightfile}")  # name of the weightfile used
 
@@ -311,18 +311,24 @@ Angel_var = ['AngelD0and1stpi', 'AngelD0and2ndpi', 'AngelD0and3rdpi', 'Angel1sta
 # Create list of variables to save into the output file
 vm.addAlias('ethoo0', 'formula((KSFWVariables(et) - KSFWVariables(hoo0))/(KSFWVariables(et) + KSFWVariables(hoo0)))')
 vm.addAlias('hso00mm2', 'formula((KSFWVariables(hso00) - KSFWVariables(mm2))/(KSFWVariables(hso00) + KSFWVariables(mm2)))')
-vm.addAlias('hoo3hoo1', 'formula((KSFWVariables(hoo3) - KSFWVariables(hoo1))/(KSFWVariables(hoo3) + KSFWVariables(hoo1)))')
-vm.addAlias('hso01hso03', 'formula((KSFWVariables(hso01) - KSFWVariables(hso03))/(KSFWVariables(hso01) + KSFWVariables(hso03)))')
+vm.addAlias('hoo3hoo1', 'formula((KSFWVariables(hoo3) + KSFWVariables(hoo1)))')
+vm.addAlias('hso01hso03', 'formula((KSFWVariables(hso01) + KSFWVariables(hso03)))')
 vm.addAlias('ethoo0TBz', 'formula((ethoo0 - cosTBz)/(ethoo0 + cosTBz))')
 vm.addAlias('ethoo0hso00mm2', 'formula((ethoo0 - hso00mm2)/(ethoo0 + hso00mm2))')
+vm.addAlias('hso12hso02hoo2', 'formula((KSFWVariables(hso12) + KSFWVariables(hso02) + KSFWVariables(hoo2)))')
+vm.addAlias('hso12hso02hoo2thrustOm_lc', 'formula((hso12hso02hoo2 - thrustOm)/(hso12hso02hoo2 + thrustOm))')
+vm.addAlias('hso12hso02hoo2thrustOm_p', 'formula((hso12hso02hoo2 + thrustOm))')
 
 ###################################R2
-vm.addAlias('R2thrustBm', 'formula((R2 - thrustBm)/(R2 + thrustBm))')
+vm.addAlias('R2cosTBTO_lc', 'formula((R2 - cosTBTO)/(R2 + cosTBTO))')
+vm.addAlias('R2cosTBTO_p', 'formula((R2 + cosTBTO))')
+vm.addAlias('R2thrustBm_lc', 'formula((R2 - thrustBm)/(R2 + thrustBm))')
+vm.addAlias('R2thrustBm_p', 'formula((R2 + thrustBm))')
 vm.addAlias('TBTOhso12', 'formula((cosTBTO - KSFWVariables(hso12))/(cosTBTO + KSFWVariables(hso12)))')
 vm.addAlias('thrustOmhoo2', 'formula((thrustOm - KSFWVariables(hoo2))/(thrustOm + KSFWVariables(hoo2)))')
 
-vm.addAlias('R2thrustBmTBTOhso12', 'formula((R2thrustBm - TBTOhso12)/(R2thrustBm + TBTOhso12))')
-vm.addAlias('R2thrustBmthrustOmhoo2', 'formula((R2thrustBm - thrustOmhoo2)/(R2thrustBm + thrustOmhoo2))')
+vm.addAlias('R2thrustBmTBTOhso12', 'formula((R2thrustBm_lc - TBTOhso12)/(R2thrustBm_lc + TBTOhso12))')
+vm.addAlias('R2thrustBmthrustOmhoo2', 'formula((R2thrustBm_lc - thrustOmhoo2)/(R2thrustBm_lc + thrustOmhoo2))')
 vm.addAlias('TBTOhso12thrustOmhoo2', 'formula((TBTOhso12 - thrustOmhoo2)/(TBTOhso12 + thrustOmhoo2))')
 
 vm.addAlias('R2thrustBmTBTOhso12thrustOmhoo2', 'formula((R2thrustBmTBTOhso12 - thrustOmhoo2)/(R2thrustBmTBTOhso12 + thrustOmhoo2))')
@@ -333,53 +339,59 @@ vm.addAlias('CMS_cosTheta', 'useCMSFrame(cosTheta)')
 simpleCSVariables = [
     # "ethoo0",
     # "hso00mm2",
-    "ethoo0hso00mm2",
-    # "hoo3hoo1",   #nan
-    # "hso01hso03", #nan
+    # "ethoo0hso00mm2",
+    # "hoo3hoo1",
+    # "hso01hso03",
     # "ethoo0TBz",
-    # "R2thrustBm",
+    # "hso12hso02hoo2",
+    # "hso12hso02hoo2thrustOm_lc",
+    # "hso12hso02hoo2thrustOm_p",
+    # "R2cosTBTO_lc",
+    # "R2cosTBTO_p",
+    # "R2thrustBm_lc",
+    # "R2thrustBm_p",
     # "TBTOhso12",
-    "thrustOmhoo2",
-    "R2thrustBmTBTOhso12",    #1 thrustOmhoo2
-    # "R2thrustBmthrustOmhoo2", #2 TBTOhso12
-    # "TBTOhso12thrustOmhoo2",  #4 R2thrustBm
-    # "R2thrustBmTBTOhso12thrustOmhoo2",    #3
+    # "thrustOmhoo2",
+    # "R2thrustBmTBTOhso12",
+    # "R2thrustBmthrustOmhoo2",
+    # "TBTOhso12thrustOmhoo2",
+    # "R2thrustBmTBTOhso12thrustOmhoo2",
     "abs_qr",       # calculated using ft.flavorTagger fn
     # "sphericity",   # calculated using ma.buildEventShape fn
     "DeltaZ",       # calculated using vx.TagV fn
-    # "R2",           # rest of the variables are calculated using ma.buildContinuumSuppression fn
-    # "thrustBm",  #must    #significance
-    # "thrustOm",  #must    #significance
-    # "cosTBTO",  #must    #significance
+    "R2",           # rest of the variables are calculated using ma.buildContinuumSuppression fn
+    "thrustBm",  #must    #significance
+    "thrustOm",  #must    #significance
+    "cosTBTO",  #must    #significance
     "cosTBz",  #must    #significance
     "CMS_cosTheta",  #must    #significance
-    # "KSFWVariables(et)",    #significance
-    # "KSFWVariables(mm2)",
-    # "KSFWVariables(hso00)",
-    # "KSFWVariables(hso01)",
-    # "KSFWVariables(hso02)",  #must    #significance     #############nearly_same##########
-    # "KSFWVariables(hso03)",
-    # "KSFWVariables(hso04)",    #significance
-    # "KSFWVariables(hso10)",    #significance
-    # "KSFWVariables(hso12)",  #must    #significance     #############nearly_same##########
+    "KSFWVariables(et)",    #significance
+    "KSFWVariables(mm2)",
+    "KSFWVariables(hso00)",
+    "KSFWVariables(hso01)",
+    "KSFWVariables(hso02)",  #must    #significance     #############nearly_same##########
+    "KSFWVariables(hso03)",
+    "KSFWVariables(hso04)",    #significance
+    "KSFWVariables(hso10)",    #significance
+    "KSFWVariables(hso12)",  #must    #significance     #############nearly_same##########
     "KSFWVariables(hso14)",    #significance
-    # "KSFWVariables(hso20)",    #significance
-    # "KSFWVariables(hso22)",
+    "KSFWVariables(hso20)",    #significance
+    "KSFWVariables(hso22)",
     "KSFWVariables(hso24)",
-    # "KSFWVariables(hoo0)",  #must    #significance
-    # "KSFWVariables(hoo1)",
-    # "KSFWVariables(hoo2)",    #significance
-    # "KSFWVariables(hoo3)",
-    # "KSFWVariables(hoo4)",    #significance
-    # "CleoConeCS(1)",
-    # "CleoConeCS(2)",
-    # "CleoConeCS(3)",
+    "KSFWVariables(hoo0)",  #must    #significance
+    "KSFWVariables(hoo1)",
+    "KSFWVariables(hoo2)",    #significance
+    "KSFWVariables(hoo3)",
+    "KSFWVariables(hoo4)",    #significance
+    "CleoConeCS(1)",
+    "CleoConeCS(2)",
+    "CleoConeCS(3)",
     "CleoConeCS(4)",
-    # "CleoConeCS(5)",
-    # "CleoConeCS(6)",
-    # "CleoConeCS(7)",
-    # "CleoConeCS(8)",
-    # "CleoConeCS(9)",
+    "CleoConeCS(5)",
+    "CleoConeCS(6)",
+    "CleoConeCS(7)",
+    "CleoConeCS(8)",
+    "CleoConeCS(9)",
 ]
 vm.addAlias("D0M_BF", "extraInfo(M_before_fit)")
 vm.addAlias("SigProb", "extraInfo(SignalProbability)")
@@ -389,8 +401,6 @@ vm.addAlias('fitNdf', 'extraInfo(ndf)')
 
 
 b_vars = []
-# bcs_var = ['BCS3_rank']
-# b_vars  += bcs_var
 b_vars  += invM_var
 # b_vars  += Angel_var
 b_vars += veto_var
@@ -398,22 +408,24 @@ b_vars += veto_var
 other_var = ['p', 'E', 'isSignal', 'M', 'InvM', 'Mbc', 'deltaE', 'chiProb']
 b_vars += other_var
 b_vars += simpleCSVariables
-# track_variables = ['PID_bin_kaon', 'pionID', 'kaonID']
-# b_vars += vu.create_aliases_for_selected(
-#     track_variables,
-#     "B+ -> [anti-D0 -> ^K+ pi-] pi+ pi- pi+",
-#     prefix=["Kp"],
-# )
+BCS = ['BCS3_rank','BCS3']
+b_vars += BCS
+track_variables = ['PID_bin_kaon', 'pionID', 'kaonID']
+b_vars += vu.create_aliases_for_selected(
+    track_variables,
+    "B+ -> [anti-D0 -> ^K+ pi-] pi+ pi- pi+",
+    prefix=["Kp"],
+)
 
-# # D_var = vc.inv_mass + vc.deltae_mbc + vc.mc_truth + vc.vertex + vc.mc_vertex + ['chiSqrd', 'fitNdf']
-# D_var = ['M', 'D0M_BF', 'InvM', 'Mbc', 'deltaE', 'isSignal', 'dr', 'dz',
-#         'mcDecayVertexX', 'mcDecayVertexY', 'mcDecayVertexZ', 'x', 'y', 'z',
-#         'chiProb', 'chiSqrd', 'fitNdf']
-# b_vars += vu.create_aliases_for_selected(
-#     D_var,
-#     "B+ -> [^anti-D0 -> K+ pi-] pi+ pi- pi+",
-#     prefix=["D0_bar"],
-# )
+# D_var = vc.inv_mass + vc.deltae_mbc + vc.mc_truth + vc.vertex + vc.mc_vertex + ['chiSqrd', 'fitNdf']
+D_var = ['M', 'D0M_BF', 'InvM', 'Mbc', 'deltaE', 'isSignal', 'dr', 'dz',
+        'mcDecayVertexX', 'mcDecayVertexY', 'mcDecayVertexZ', 'x', 'y', 'z',
+        'chiProb', 'chiSqrd', 'fitNdf']
+b_vars += vu.create_aliases_for_selected(
+    D_var,
+    "B+ -> [^anti-D0 -> K+ pi-] pi+ pi- pi+",
+    prefix=["D0_bar"],
+)
 
 
 ma.variablesToNtuple(

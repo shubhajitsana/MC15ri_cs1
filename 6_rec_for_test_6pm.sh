@@ -43,7 +43,7 @@ let rec_start_mixed=${7:-1}-1
 let rec_start=0
 
 # Strating reconstruction
-declare -a options=("signal" "charged" "uubar" "ddbar" "ssbar" "ccbar") # "mixed"
+declare -a options=("signal" "uubar" "ddbar" "ssbar" "ccbar") # "mixed" "charged" 
 
 for opt in "${options[@]}"
 do

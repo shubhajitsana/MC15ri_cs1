@@ -13,7 +13,7 @@ input_path="$path/cs/test/prescale_combine"
 output_path=$input_path
 
 # Preparing string for piping in pyroot code
-declare -a options=("uubar" "ddbar" "ssbar" "ccbar" "charged" "signal")
+declare -a options=("signal" "uubar" "ddbar" "ssbar" "ccbar")   # "charged"
 in6out6=""
 for opt in "${options[@]}"
 do

@@ -234,8 +234,8 @@ b_vars  += Angel_var
 other_var = ['p', 'E', 'isSignal', 'M', 'InvM', 'Mbc', 'deltaE', 'chiProb']
 b_vars += other_var
 b_vars += simpleCSVariables
-# BCS = ['BCS3_rank','BCS3']
-# b_vars += BCS
+BCS = ['BCS3_rank','BCS3']
+b_vars += BCS
 track_variables = ['PID_bin_kaon', 'pionID', 'kaonID']
 b_vars += vu.create_aliases_for_selected(
     track_variables,

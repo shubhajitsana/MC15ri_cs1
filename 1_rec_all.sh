@@ -11,7 +11,7 @@ steering_file="$path/b2d_bcs_myveto_1pi.py"
 echo "Steering file is $steering_file"
 
 # Strating reconstruction
-declare -a options=("signal" "charged" "uubar" "ddbar" "ssbar" "ccbar") #  "mixed"
+declare -a options=("signal" "uubar" "ddbar" "ssbar" "ccbar") #  "mixed" "charged" 
 
 for opt in "${options[@]}"
 do
