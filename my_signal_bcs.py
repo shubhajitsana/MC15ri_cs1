@@ -9,12 +9,10 @@ import sys
 input_filename = []
 output_filename = []
 # for i in range(1, 3):
-for i in range(1, 2):
-    input_filename.append(sys.argv[i])
+for i in range(1, 2): input_filename.append(sys.argv[i])
 print(f"1 Input file(s) is/are {input_filename}")
 # for i in range(3, 5):
-for i in range(2, 3):
-    output_filename.append(sys.argv[i])
+for i in range(2, 3): output_filename.append(sys.argv[i])
 print(f"1 Ouput file(s) is/are {output_filename}")
 
 total_signal_event_number = 0

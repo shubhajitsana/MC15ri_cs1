@@ -132,7 +132,8 @@ void signal_mD(){
     frame3->Draw() ;
     frame3->SetLineStyle(9);
     frame3->GetYaxis()->SetNdivisions(505);
-    frame3->GetYaxis()->SetTitle("#sqrt{#chi^{2}}"); 
+    // frame3->GetYaxis()->SetTitle("#sqrt{#chi^{2}}"); 
+    frame3->GetYaxis()->SetTitle("Pull"); 
     frame3->GetXaxis()->SetTitle("M_{bc} (GeV)"); 
     frame3->GetXaxis()->SetTitleSize(0.13);
     frame3->GetYaxis()->SetTitleSize(0.15);

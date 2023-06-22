@@ -21,26 +21,22 @@ for i in range(len(input_filename)): input_root_file.append(ROOT.TFile.Open(f"{i
 input_tree = []
 for i in range(len(input_root_file)): input_tree.append(input_root_file[i].Get('tree'))
 
-total_event_number = []
-for i in range(len(input_tree)): total_event_number.append(input_tree[i].GetEntries())
-NEvent = np.array(total_event_number)
-cross_section_ratio_in_percentage = np.array([3, 0.43168, 0.10785, 0.10301, 0.35745])
+bbbar_Event = np.zeros(4)
+for i in range(4): bbbar_Event[i] = input_tree[0].GetEntries()
 
-Projected_NEvent = NEvent/cross_section_ratio_in_percentage
-TM_NEvent = np.zeros(5)
-for i in range(len(TM_NEvent)): TM_NEvent[i] = Projected_NEvent.min()
+qqbar_event_number = []
+for i in range(4): qqbar_event_number.append(input_tree[(i +1)].GetEntries())
 
-Final_NEvent = TM_NEvent * cross_section_ratio_in_percentage
-scale = Final_NEvent/NEvent                                       # Setting Scale
+NEvent = np.array(qqbar_event_number)
+NEvent_total = NEvent.sum()
+scale = bbbar_Event[0]/NEvent_total    # Setting Scale
 
-print(f"The event number of TM,u,d,s,c(bar) are : {NEvent}")
-print(f"The cross sections ratio of u,d,s,c(bar) are : {cross_section_ratio_in_percentage}")
-print(f"The Projected event number of TM,u,d,s,c(bar) are : {Projected_NEvent}")
-print(f"The number of TM events should be : {TM_NEvent}")
-print(f"New total event according to cross section should be {Final_NEvent}")
+print(f"The event number of u,d,s,c(bar) are : {qqbar_event_number}")
+print(f"The total number events of u,d,s,c(bar) are : {NEvent_total}")
+print(f"The total number of TM events is : {bbbar_Event[0]}")
 print(f"So scaling factor is {scale}")
 
-for i in range(5):
+for i in range(1,5):
     # # Loading input root file and creating new root file
     # inFile = ROOT.TFile.Open(f"{input_filename[i]}")
     # inTree = inFile.Get('tree')
@@ -48,13 +44,14 @@ for i in range(5):
     outFile = ROOT.TFile.Open(f"{output_filename[i]}","RECREATE"); 
     outTree = input_tree[i].CloneTree(0)
     print(f"Scaling from {input_filename[i]} and saving to {output_filename[i]} \
-    with scale factor {scale[i]}")
+    with scale factor {scale}")
 
     # Scaling the file
     Number_of_selected_events = 0       # To count and print the number of selected events per file
-    for iEvent in range(NEvent[i]):
+    # j = i - 1       #as dimension of NEvent is 1 less than input_file
+    for iEvent in range(qqbar_event_number[(i - 1)]):     #as dimension of NEvent is 1 less than input_file
         rand = ROOT.gRandom.Rndm()
-        if rand > scale[i]: continue    #shouldn't be "<" symbol bcz "continue" BREAKS one iteration
+        if rand > scale: continue    #shouldn't be "<" symbol bcz "continue" BREAKS one iteration
         input_tree[i].GetEntry(iEvent)
         outTree.Fill()
         Number_of_selected_events += 1

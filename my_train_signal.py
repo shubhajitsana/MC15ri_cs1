@@ -40,33 +40,33 @@ general_options.m_variables = basf2_mva.vector(
     "cosTBTO",  #must    #significance
     "cosTBz",  #must    #significance
     "CMS_cosTheta",  #must    #significance
-    "KSFWVariables(et)",    #significance
-    "KSFWVariables(mm2)",
-    "KSFWVariables(hso00)",
-    "KSFWVariables(hso01)",
-    "KSFWVariables(hso02)",  #must    #significance     #############nearly_same##########
-    "KSFWVariables(hso03)",
-    "KSFWVariables(hso04)",    #significance
-    "KSFWVariables(hso10)",    #significance
+    # "KSFWVariables(et)",    #significance
+    # "KSFWVariables(mm2)",
+    # "KSFWVariables(hso00)",
+    # "KSFWVariables(hso01)",
+    # "KSFWVariables(hso02)",  #must    #significance     #############nearly_same##########
+    # "KSFWVariables(hso03)",
+    # "KSFWVariables(hso04)",    #significance
+    # "KSFWVariables(hso10)",    #significance
     "KSFWVariables(hso12)",  #must    #significance     #############nearly_same##########
-    "KSFWVariables(hso14)",    #significance
-    "KSFWVariables(hso20)",    #significance
-    "KSFWVariables(hso22)",
-    "KSFWVariables(hso24)",
+    # "KSFWVariables(hso14)",    #significance
+    # "KSFWVariables(hso20)",    #significance
+    # "KSFWVariables(hso22)",
+    # "KSFWVariables(hso24)",
     "KSFWVariables(hoo0)",  #must    #significance
-    "KSFWVariables(hoo1)",
-    "KSFWVariables(hoo2)",    #significance
-    "KSFWVariables(hoo3)",
-    "KSFWVariables(hoo4)",    #significance
-    "CleoConeCS(1)",
-    "CleoConeCS(2)",
-    "CleoConeCS(3)",
-    "CleoConeCS(4)",
-    "CleoConeCS(5)",
-    "CleoConeCS(6)",
-    "CleoConeCS(7)",
-    "CleoConeCS(8)",
-    "CleoConeCS(9)",
+    # "KSFWVariables(hoo1)",
+    # "KSFWVariables(hoo2)",    #significance
+    # "KSFWVariables(hoo3)",
+    # "KSFWVariables(hoo4)",    #significance
+    # "CleoConeCS(1)",
+    # "CleoConeCS(2)",
+    # "CleoConeCS(3)",
+    # "CleoConeCS(4)",
+    # "CleoConeCS(5)",
+    # "CleoConeCS(6)",
+    # "CleoConeCS(7)",
+    # "CleoConeCS(8)",
+    # "CleoConeCS(9)",
 )
 general_options.m_target_variable = "isSignal"
 fastbdt_options = basf2_mva.FastBDTOptions()

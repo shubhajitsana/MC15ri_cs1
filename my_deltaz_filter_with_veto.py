@@ -48,16 +48,16 @@ for i in range(5):
             if (
                 (deltae > -0.1 and deltae < 0.1) and 
                 (mbc > 5.27 and mbc < 5.29) and 
-                (md0 > 1.8536 and md0 < 1.8748) and 
-                (kid > 0.6) and 
-                (D_s_InvM < 1.958 or D_s_InvM > 1.978) and 
-                (D_10D_md < 0.496 or D_10D_md > 0.628) and 
-                (InvM1stand2ndpi < 0.489 or InvM1stand2ndpi > 0.506) and 
-                (InvM2ndand3rdpi < 0.49 or InvM2ndand3rdpi > 0.505) and 
-                (InvMD0and1stpi < 2.0085 or InvMD0and1stpi > 2.0122) and 
-                (InvMD0and2ndpi < 2.0087 or InvMD0and2ndpi > 2.0118) and 
-                (InvMD0and3rdpi < 2.009 or InvMD0and3rdpi > 2.0116) and 
-                (DstrminusroeD_md < 0.14402 or DstrminusroeD_md > 0.14682)
+                (md0 > 1.855 and md0 < 1.8742) and 
+                (kid > 0.6) #and 
+                # (D_s_InvM < 1.958 or D_s_InvM > 1.978) and 
+                # (D_10D_md < 0.496 or D_10D_md > 0.628) and 
+                # (InvM1stand2ndpi < 0.489 or InvM1stand2ndpi > 0.506) and 
+                # (InvM2ndand3rdpi < 0.49 or InvM2ndand3rdpi > 0.505) and 
+                # (InvMD0and1stpi < 2.0085 or InvMD0and1stpi > 2.0122) and 
+                # (InvMD0and2ndpi < 2.0087 or InvMD0and2ndpi > 2.0118) and 
+                # (InvMD0and3rdpi < 2.009 or InvMD0and3rdpi > 2.0116) and 
+                # (DstrminusroeD_md < 0.14402 or DstrminusroeD_md > 0.14682)
             ):
                 outTree.Fill()
                 deltaZ_is_not_NAN_veto_passed_event_number += 1

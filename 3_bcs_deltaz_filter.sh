@@ -29,10 +29,10 @@ done
 echo "$(basf2 $pyrt_file $in6out6)"          #For BELLE II server
 
 # Deleting files containing deltaz value as "nan"
-for opt in "${options[@]}"
-do
-    file_to_be_deleted="$input_path/train_$opt.root"
-    $(rm -f ${file_to_be_deleted})
-    echo "So $file_to_be_deleted has been deleted."
+# for opt in "${options[@]}"
+# do
+#     file_to_be_deleted="$input_path/train_$opt.root"
+#     $(rm -f ${file_to_be_deleted})
+#     echo "So $file_to_be_deleted has been deleted."
 
-done
+# done

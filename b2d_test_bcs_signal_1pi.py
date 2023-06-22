@@ -45,18 +45,29 @@ ma.inputMdstList(environmentType="default",filelist=f"{file_name}", entrySequenc
 
 
 # fill final state particle lists
-ma.fillParticleList("pi+:myPions2", "abs(d0)<0.2 and abs(z0)<1 and cosTheta >= -0.6", path=main)
+ma.fillParticleList("pi+", "abs(d0)<0.2 and abs(z0)<1 and cosTheta >= -0.6", path=main)
 ma.fillParticleList("K+", "abs(d0)<0.2 and abs(z0)<1 and cosTheta >= -0.6", path=main)
 
 #D0 reconstruction
-ma.reconstructDecay("anti-D0 -> K+ pi-:myPions2",cut="1.84 < M < 1.89",path=main)
+ma.reconstructDecay("anti-D0 -> K+ pi-",cut="1.845 <= M <= 1.885",path=main)
 ma.variablesToExtraInfo("anti-D0", variables={'M': 'M_before_fit'}, path=main)
 vx.kFit("anti-D0", conf_level=0.0, fit_type='massvertex', path=main)
 ma.matchMCTruth("anti-D0", path=main)
 
 #B reconstruction
-ma.reconstructDecay("B+ -> anti-D0 pi+:myPions2 pi-:myPions2 pi+:myPions2",cut="5.22 < Mbc < 5.3 and abs(deltaE) < 0.17",path=main)
+ma.reconstructDecay("B+ -> anti-D0 pi+ pi- pi+",cut="5.26 <= Mbc <= 5.295 and abs(deltaE) <= 0.12",path=main)
 ma.matchMCTruth("B+", path=main)
+
+###########Applying KaonID cut before doing further analysis##############################
+vm.addAlias('PID_bin_kaon', 'ifNANgiveX(pidPairProbabilityExpert(321, 211, ALL), 0.5)')
+track_variables = ['PID_bin_kaon', 'pionID', 'kaonID']
+track_variables_list= vu.create_aliases_for_selected(
+    track_variables,
+    "B+ -> [anti-D0 -> ^K+ ^pi-] pi+ pi- pi+",
+    prefix=["Kp", "pm"],
+)
+ma.applyCuts('B+','Kp_PID_bin_kaon >= 0.57',path=main)
+###########Doing other analysis after Applying KaonID cut##############################
 
 ma.buildRestOfEvent(target_list_name="B+", path=main)
 cleanMask = ("cleanMask", "nCDCHits > 0 and useCMSFrame(p)<=3.2", "p >= 0.05 and useCMSFrame(p)<=3.2")
@@ -294,46 +305,46 @@ invM_var = ['InvMD0and1stpi', 'InvMD0and2ndpi', 'InvMD0and3rdpi', 'InvM1stand2nd
     'InvM2ndand3rdpi', 'InvM1st2nd3rdpi', 'InvMD0and1st2ndpi', 'InvMD0and2nd3rdpi', 'InvMD0and1st3rdpi']
 ##############################calculation of invariant mass##########################
 
-############################## Calculation of angle between daughteres#############
-vm.addAlias('AngelD0and1stpi', 'daughterAngle(0, 1)')
-vm.addAlias('AngelD0and2ndpi', 'daughterAngle(0, 2)')
-vm.addAlias('AngelD0and3rdpi', 'daughterAngle(0, 3)')
-vm.addAlias('Angel1stand2ndpi', 'daughterAngle(1, 2)')
-vm.addAlias('Angel1stand3rdpi', 'daughterAngle(1, 3)')
-vm.addAlias('Angel2ndand3rdpi', 'daughterAngle(2, 3)')
+# ############################## Calculation of angle between daughteres#############
+# vm.addAlias('AngelD0and1stpi', 'daughterAngle(0, 1)')
+# vm.addAlias('AngelD0and2ndpi', 'daughterAngle(0, 2)')
+# vm.addAlias('AngelD0and3rdpi', 'daughterAngle(0, 3)')
+# vm.addAlias('Angel1stand2ndpi', 'daughterAngle(1, 2)')
+# vm.addAlias('Angel1stand3rdpi', 'daughterAngle(1, 3)')
+# vm.addAlias('Angel2ndand3rdpi', 'daughterAngle(2, 3)')
 
-vm.addAlias('AngelKpi', 'daughterAngle(0:0, 0:1)')
+# vm.addAlias('AngelKpi', 'daughterAngle(0:0, 0:1)')
 
-Angel_var = ['AngelD0and1stpi', 'AngelD0and2ndpi', 'AngelD0and3rdpi', 'Angel1stand2ndpi', 'Angel1stand3rdpi',
-    'Angel2ndand3rdpi', 'AngelKpi']
-############################## Calculation of angle between daughteres#############
+# Angel_var = ['AngelD0and1stpi', 'AngelD0and2ndpi', 'AngelD0and3rdpi', 'Angel1stand2ndpi', 'Angel1stand3rdpi',
+#     'Angel2ndand3rdpi', 'AngelKpi']
+# ############################## Calculation of angle between daughteres#############
 
-# Create list of variables to save into the output file
-vm.addAlias('ethoo0', 'formula((KSFWVariables(et) - KSFWVariables(hoo0))/(KSFWVariables(et) + KSFWVariables(hoo0)))')
-vm.addAlias('hso00mm2', 'formula((KSFWVariables(hso00) - KSFWVariables(mm2))/(KSFWVariables(hso00) + KSFWVariables(mm2)))')
-vm.addAlias('hoo3hoo1', 'formula((KSFWVariables(hoo3) + KSFWVariables(hoo1)))')
-vm.addAlias('hso01hso03', 'formula((KSFWVariables(hso01) + KSFWVariables(hso03)))')
-vm.addAlias('ethoo0TBz', 'formula((ethoo0 - cosTBz)/(ethoo0 + cosTBz))')
-vm.addAlias('ethoo0hso00mm2', 'formula((ethoo0 - hso00mm2)/(ethoo0 + hso00mm2))')
-vm.addAlias('hso12hso02hoo2', 'formula((KSFWVariables(hso12) + KSFWVariables(hso02) + KSFWVariables(hoo2)))')
-vm.addAlias('hso12hso02hoo2thrustOm_lc', 'formula((hso12hso02hoo2 - thrustOm)/(hso12hso02hoo2 + thrustOm))')
-vm.addAlias('hso12hso02hoo2thrustOm_p', 'formula((hso12hso02hoo2 + thrustOm))')
+# # Create list of variables to save into the output file
+# vm.addAlias('ethoo0', 'formula((KSFWVariables(et) - KSFWVariables(hoo0))/(KSFWVariables(et) + KSFWVariables(hoo0)))')
+# vm.addAlias('hso00mm2', 'formula((KSFWVariables(hso00) - KSFWVariables(mm2))/(KSFWVariables(hso00) + KSFWVariables(mm2)))')
+# vm.addAlias('hoo3hoo1', 'formula((KSFWVariables(hoo3) + KSFWVariables(hoo1)))')
+# vm.addAlias('hso01hso03', 'formula((KSFWVariables(hso01) + KSFWVariables(hso03)))')
+# vm.addAlias('ethoo0TBz', 'formula((ethoo0 - cosTBz)/(ethoo0 + cosTBz))')
+# vm.addAlias('ethoo0hso00mm2', 'formula((ethoo0 - hso00mm2)/(ethoo0 + hso00mm2))')
+# vm.addAlias('hso12hso02hoo2', 'formula((KSFWVariables(hso12) + KSFWVariables(hso02) + KSFWVariables(hoo2)))')
+# vm.addAlias('hso12hso02hoo2thrustOm_lc', 'formula((hso12hso02hoo2 - thrustOm)/(hso12hso02hoo2 + thrustOm))')
+# vm.addAlias('hso12hso02hoo2thrustOm_p', 'formula((hso12hso02hoo2 + thrustOm))')
 
-###################################R2
-vm.addAlias('R2cosTBTO_lc', 'formula((R2 - cosTBTO)/(R2 + cosTBTO))')
-vm.addAlias('R2cosTBTO_p', 'formula((R2 + cosTBTO))')
-vm.addAlias('R2thrustBm_lc', 'formula((R2 - thrustBm)/(R2 + thrustBm))')
-vm.addAlias('R2thrustBm_p', 'formula((R2 + thrustBm))')
-vm.addAlias('TBTOhso12', 'formula((cosTBTO - KSFWVariables(hso12))/(cosTBTO + KSFWVariables(hso12)))')
-vm.addAlias('thrustOmhoo2', 'formula((thrustOm - KSFWVariables(hoo2))/(thrustOm + KSFWVariables(hoo2)))')
+# ###################################R2
+# vm.addAlias('R2cosTBTO_lc', 'formula((R2 - cosTBTO)/(R2 + cosTBTO))')
+# vm.addAlias('R2cosTBTO_p', 'formula((R2 + cosTBTO))')
+# vm.addAlias('R2thrustBm_lc', 'formula((R2 - thrustBm)/(R2 + thrustBm))')
+# vm.addAlias('R2thrustBm_p', 'formula((R2 + thrustBm))')
+# vm.addAlias('TBTOhso12', 'formula((cosTBTO - KSFWVariables(hso12))/(cosTBTO + KSFWVariables(hso12)))')
+# vm.addAlias('thrustOmhoo2', 'formula((thrustOm - KSFWVariables(hoo2))/(thrustOm + KSFWVariables(hoo2)))')
 
-vm.addAlias('R2thrustBmTBTOhso12', 'formula((R2thrustBm_lc - TBTOhso12)/(R2thrustBm_lc + TBTOhso12))')
-vm.addAlias('R2thrustBmthrustOmhoo2', 'formula((R2thrustBm_lc - thrustOmhoo2)/(R2thrustBm_lc + thrustOmhoo2))')
-vm.addAlias('TBTOhso12thrustOmhoo2', 'formula((TBTOhso12 - thrustOmhoo2)/(TBTOhso12 + thrustOmhoo2))')
+# vm.addAlias('R2thrustBmTBTOhso12', 'formula((R2thrustBm_lc - TBTOhso12)/(R2thrustBm_lc + TBTOhso12))')
+# vm.addAlias('R2thrustBmthrustOmhoo2', 'formula((R2thrustBm_lc - thrustOmhoo2)/(R2thrustBm_lc + thrustOmhoo2))')
+# vm.addAlias('TBTOhso12thrustOmhoo2', 'formula((TBTOhso12 - thrustOmhoo2)/(TBTOhso12 + thrustOmhoo2))')
 
-vm.addAlias('R2thrustBmTBTOhso12thrustOmhoo2', 'formula((R2thrustBmTBTOhso12 - thrustOmhoo2)/(R2thrustBmTBTOhso12 + thrustOmhoo2))')
+# vm.addAlias('R2thrustBmTBTOhso12thrustOmhoo2', 'formula((R2thrustBmTBTOhso12 - thrustOmhoo2)/(R2thrustBmTBTOhso12 + thrustOmhoo2))')
 
-##########################R2
+# ##########################R2
 
 vm.addAlias('CMS_cosTheta', 'useCMSFrame(cosTheta)')
 simpleCSVariables = [
@@ -365,42 +376,42 @@ simpleCSVariables = [
     "cosTBTO",  #must    #significance
     "cosTBz",  #must    #significance
     "CMS_cosTheta",  #must    #significance
-    "KSFWVariables(et)",    #significance
-    "KSFWVariables(mm2)",
-    "KSFWVariables(hso00)",
-    "KSFWVariables(hso01)",
-    "KSFWVariables(hso02)",  #must    #significance     #############nearly_same##########
-    "KSFWVariables(hso03)",
-    "KSFWVariables(hso04)",    #significance
-    "KSFWVariables(hso10)",    #significance
+    # "KSFWVariables(et)",    #significance
+    # "KSFWVariables(mm2)",
+    # "KSFWVariables(hso00)",
+    # "KSFWVariables(hso01)",
+    # "KSFWVariables(hso02)",  #must    #significance     #############nearly_same##########
+    # "KSFWVariables(hso03)",
+    # "KSFWVariables(hso04)",    #significance
+    # "KSFWVariables(hso10)",    #significance
     "KSFWVariables(hso12)",  #must    #significance     #############nearly_same##########
-    "KSFWVariables(hso14)",    #significance
-    "KSFWVariables(hso20)",    #significance
-    "KSFWVariables(hso22)",
-    "KSFWVariables(hso24)",
+    # "KSFWVariables(hso14)",    #significance
+    # "KSFWVariables(hso20)",    #significance
+    # "KSFWVariables(hso22)",
+    # "KSFWVariables(hso24)",
     "KSFWVariables(hoo0)",  #must    #significance
-    "KSFWVariables(hoo1)",
-    "KSFWVariables(hoo2)",    #significance
-    "KSFWVariables(hoo3)",
-    "KSFWVariables(hoo4)",    #significance
-    "CleoConeCS(1)",
-    "CleoConeCS(2)",
-    "CleoConeCS(3)",
-    "CleoConeCS(4)",
-    "CleoConeCS(5)",
-    "CleoConeCS(6)",
-    "CleoConeCS(7)",
-    "CleoConeCS(8)",
-    "CleoConeCS(9)",
+    # "KSFWVariables(hoo1)",
+    # "KSFWVariables(hoo2)",    #significance
+    # "KSFWVariables(hoo3)",
+    # "KSFWVariables(hoo4)",    #significance
+    # "CleoConeCS(1)",
+    # "CleoConeCS(2)",
+    # "CleoConeCS(3)",
+    # "CleoConeCS(4)",
+    # "CleoConeCS(5)",
+    # "CleoConeCS(6)",
+    # "CleoConeCS(7)",
+    # "CleoConeCS(8)",
+    # "CleoConeCS(9)",
 ]
 vm.addAlias("D0M_BF", "extraInfo(M_before_fit)")
 vm.addAlias("SigProb", "extraInfo(SignalProbability)")
-vm.addAlias('PID_bin_kaon', 'ifNANgiveX(pidPairProbabilityExpert(321, 211, ALL), 0.5)')
 vm.addAlias('chiSqrd', 'extraInfo(chiSquared)')
 vm.addAlias('fitNdf', 'extraInfo(ndf)')
 
 
 b_vars = []
+b_vars += track_variables_list
 b_vars  += invM_var
 # b_vars  += Angel_var
 b_vars += veto_var
@@ -410,12 +421,6 @@ b_vars += other_var
 b_vars += simpleCSVariables
 BCS = ['BCS3_rank','BCS3']
 b_vars += BCS
-track_variables = ['PID_bin_kaon', 'pionID', 'kaonID']
-b_vars += vu.create_aliases_for_selected(
-    track_variables,
-    "B+ -> [anti-D0 -> ^K+ pi-] pi+ pi- pi+",
-    prefix=["Kp"],
-)
 
 # D_var = vc.inv_mass + vc.deltae_mbc + vc.mc_truth + vc.vertex + vc.mc_vertex + ['chiSqrd', 'fitNdf']
 D_var = ['M', 'D0M_BF', 'InvM', 'Mbc', 'deltaE', 'isSignal', 'dr', 'dz',
@@ -426,6 +431,15 @@ b_vars += vu.create_aliases_for_selected(
     "B+ -> [^anti-D0 -> K+ pi-] pi+ pi- pi+",
     prefix=["D0_bar"],
 )
+
+# ma.applyCuts('B+','D_s_InvM <= 1.958 or D_s_InvM >= 1.978',path=main)
+# ma.applyCuts('B+','D_10D_md <= 0.496 or D_10D_md >= 0.628',path=main)
+# ma.applyCuts('B+','InvM1stand2ndpi <= 0.489 or InvM1stand2ndpi >= 0.506',path=main)
+# ma.applyCuts('B+','InvM2ndand3rdpi <= 0.49 or InvM2ndand3rdpi >= 0.505',path=main)
+# ma.applyCuts('B+','InvMD0and1stpi <= 2.0085 or InvMD0and1stpi >= 2.0122',path=main)
+# ma.applyCuts('B+','InvMD0and2ndpi <= 2.0087 or InvMD0and2ndpi >= 2.0118',path=main)
+# ma.applyCuts('B+','InvMD0and3rdpi <= 2.009 or InvMD0and3rdpi >= 2.0116',path=main)
+# ma.applyCuts('B+','DstrminusroeD_md <= 0.14402 or DstrminusroeD_md >= 0.14682',path=main)
 
 
 ma.variablesToNtuple(
